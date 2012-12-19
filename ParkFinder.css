@@ -200,3 +200,13 @@
     box-shadow: 0 0 15px #FFE771;
 }
 
+.tdBreak
+{
+    word-wrap: break-word;
+}
+.tdBreakWord
+{
+    display:inline-block;
+    word-break:break-all;
+    word-wrap: break-word;
+}

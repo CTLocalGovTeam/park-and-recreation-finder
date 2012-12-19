@@ -784,9 +784,10 @@ function ShowInfoWindow(feature, point) {
         td2.height = 20;
         td2.style.paddingLeft = '5px';
         if (feature.attributes[infoPopupFieldsCollection[key].FieldName] != "-") {
-            td2.innerHTML = feature.attributes[infoPopupFieldsCollection[key].FieldName];
+            CreateLink(feature.attributes[infoPopupFieldsCollection[key].FieldName], td2);
         }
         else {
+            td2.style.cursor = "default";
             td2.innerHTML = displayValue;
         }
         trRow.appendChild(td1);
@@ -797,11 +798,12 @@ function ShowInfoWindow(feature, point) {
     trimg.style.paddingTop = '3px';
     tBody.appendChild(trimg);
     var tdAct = document.createElement('td');
+    tdAct.style.width = infoWindowWidth - 40 + "px";
     trimg.appendChild(tdAct);
     var tableAct = document.createElement('table');
     tableAct.cellSpacing = 0;
     tableAct.cellPadding = 0;
-    tableAct.style.width = "100%";
+    // tableAct.style.width = "100%";
     tdAct.appendChild(tableAct);
     var tbodyAct = document.createElement('tbody');
     tableAct.appendChild(tbodyAct);
@@ -810,6 +812,7 @@ function ShowInfoWindow(feature, point) {
 
     var tdLeft = document.createElement('td');
     tdLeft.id = 'tdInfoLeftArrow';
+    tdLeft.style.width = "20px";
     var divArr = document.createElement('div');
     divArr.id = 'divInfoLeftArrow';
     divArr.style.width = "20px";
@@ -869,6 +872,7 @@ function ShowInfoWindow(feature, point) {
         }
     }
     var tdRight = document.createElement('td');
+    tdRight.style.width = "20px";
     var divAr = document.createElement('div');
     divAr.id = 'divInfoRightArrow';
     divAr.style.width = '20px';
@@ -1243,5 +1247,27 @@ function GetQuerystring(key) {
         return qs[1];
 }
 
-
-
+//Create row in table
+function CreateLink(feature, cell) {
+    if (isNaN(feature)) {
+        if ((feature.match("http:") || feature.match("https:"))) {
+            cell.setAttribute("link", feature);
+            cell.style.width = "150px";
+            cell.style.cursor = "pointer";
+            cell.onclick = function () {
+                window.open(this.getAttribute("link"));
+            }
+            cell.className = "tdBreakWord";
+            cell.innerHTML = "<u>" + feature + "</u>";
+        }
+        else {
+            cell.style.cursor = "default";
+            cell.className = "tdBreak";
+            cell.innerHTML = feature;
+        }
+    }
+    else {
+        cell.style.cursor = "default";
+        cell.innerHTML = feature;
+    }
+}
