@@ -18,7 +18,7 @@ var activityCount; //variable for storing the count of activities list
 var distance; //variable for storing the distances between points
 var features = []; //Array for storing the features that are in the buffer region
 var mapPoint; //variable for storing map point location
-var parkCount; //variable for storing the count of parks list
+var parkCount; //variable for storing the count of parks list 
 var pollPoint; //varible for storing the selected park geometry
 
 //Function to locate the entered address on the map
@@ -171,7 +171,7 @@ function PopulateSearchItem(featureSet) {
     }
 }
 
-//function for locating selected park or activity
+//function for locating selected park or activity 
 function FindTaskResults(results) {
     map.graphics.clear();
     map.infoWindow.hide();
@@ -188,11 +188,11 @@ function FindTaskResults(results) {
         featureID = results.feature.attributes[objectId];
     }
     else {
-    var query = new esri.tasks.Query;
-    query.outSpatialReference = map.spatialReference;
-    query.where = infoWindowHeader[0].FieldName + "= '" + results.feature.attributes[facilityName] + "'";
+        var query = new esri.tasks.Query;
+        query.outSpatialReference = map.spatialReference;
+        query.where = infoWindowHeader[0].FieldName + "= '" + results.feature.attributes[facilityName] + "'";
         queryTask.executeForIds(query, function (fset) {
-          featureID=  fset[0];
+            featureID = fset[0];
         });
     }
     if (!mapPoint) {
@@ -537,7 +537,7 @@ function ShowLocatedAddress(candidates, evt) {
             map.graphics.clear();
             map.getLayer(tempGraphicsLayerId).clear();
             mapPoint = '';
-         }
+        }
         else {
             if (dojo.coords(dojo.byId('divAddressContainer')).h > 0) {
                 WipeOutControl(dojo.byId('divAddressContainer'), 100);
@@ -893,21 +893,23 @@ function CreateParkDetails(point, features) {
         }
         td1.height = 20;
         var td2 = document.createElement("td");
-        td2.height = 20;
+        td2.height = 20;       
         td2.style.paddingLeft = '5px';
         if (!features[s].feature) {
             if (features[s].attributes[infoPopupFieldsCollection[key].FieldName] != "-") {
-                td2.innerHTML = features[s].attributes[infoPopupFieldsCollection[key].FieldName];
+                CreateLink(features[s].attributes[infoPopupFieldsCollection[key].FieldName], td2);
             }
             else {
+                td2.style.cursor = "default";
                 td2.innerHTML = displayValue;
             }
         }
         else {
-            if ((features[s].feature.attributes[infoPopupFieldsCollection[key].Alias].toLowerCase() != 'null') && (features[s].feature.attributes[infoPopupFieldsCollection[key].Alias].toLowerCase() !='0')) {
-                    td2.innerHTML = features[s].feature.attributes[infoPopupFieldsCollection[key].Alias];
+            if ((features[s].feature.attributes[infoPopupFieldsCollection[key].Alias].toLowerCase() != 'null') && (features[s].feature.attributes[infoPopupFieldsCollection[key].Alias].toLowerCase() != '0')) {
+                CreateLink(features[s].feature.attributes[infoPopupFieldsCollection[key].Alias], td2);
             }
             else {
+                td2.style.cursor = "default";
                 td2.innerHTML = displayValue;
             }
         }
@@ -1153,7 +1155,7 @@ function CreateParkDirections(point, features) {
         var spanTable = document.createElement('table');
         spanTable.cellSpacing = 0;
         spanTable.cellPadding = 0;
-        spanTable.style.fontSize = 10.5 +'px';
+        spanTable.style.fontSize = 10.5 + 'px';
         divActivity.appendChild(spanTable);
         var spanTbody = document.createElement('tbody');
         spanTable.appendChild(spanTbody);
@@ -1192,7 +1194,7 @@ function CreateParkDirections(point, features) {
         tdLoc.appendChild(btnLocation);
         var dojoButton = new dijit.form.ToggleButton({
             label: "<img src='images/imgGeolocation.png' style='height:20px;width:20px;cursor:pointer'/>",
-            title:'My Location',
+            title: 'My Location',
             onClick: function () {
                 ShowCurrentLocation(this);
             }
@@ -1219,7 +1221,7 @@ function CreateParkDirections(point, features) {
             text.style.width = '150px';
         }
         if (mapPoint) {
-                text.value = map.getLayer(tempGraphicsLayerId).graphics[0].attributes.Address;
+            text.value = map.getLayer(tempGraphicsLayerId).graphics[0].attributes.Address;
         }
         else {
             text.value = defaultAddress;
@@ -1300,5 +1302,3 @@ function CreateParkDirections(point, features) {
     mainContainer.appendChild(container);
     mainContainer.appendChild(round);
 }
-
-
