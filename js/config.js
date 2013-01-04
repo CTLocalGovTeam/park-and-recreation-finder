@@ -310,11 +310,11 @@ dojo.declare("js.Config", null, {
             Image: "images/soccer.png"
         },
         CAMPING: {
-            Alias: "CAMPING",
+            Alias: "Camping",
             Image: "images/camping.png"
         },
         HUNTING: {
-            Alias: "HUNTING",
+            Alias: "Hunting",
             Image: "images/hunting.png"
         },
         BASEBALL: {
