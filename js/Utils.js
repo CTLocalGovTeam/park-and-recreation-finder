@@ -14,18 +14,17 @@
 | See the License for the specific language governing permissions and
 | limitations under the License.
 */
-var orientationChange = false; //variable for setting the flag on orientation
-var tinyResponse; //variable for storing the response getting from tiny url api
-var tinyUrl; //variable for storing the tiny url
-var newInfoLeftOffice = 0;
-var newGalleryLeft = 0;
-var storeAttr;
-var selectedParkID;
-var index;
-var imgFiles = [];
-var fromInfoWindow = false;
+var orientationChange = false; //flag set on orientation event
+var tinyResponse; //variable to store the response getting from tiny URL API
+var tinyUrl; //variable to store the tiny URL
+var newInfoLeftOffice = 0;//variable to store position of attachments in info pop up
+var newGalleryLeft = 0; //variable to store new left position of the photo gallery
+var selectedParkID;// variable to store the selected park ID
+var index; // variable to store index of the image
+var imgFiles = []; // variable to store image files
+var fromInfoWindow = false; //flag set to true if the attachments are from info window
 
-//Function for refreshing address container div
+//Refresh address container div
 function RemoveChildren(parentNode) {
     if (parentNode) {
         while (parentNode.hasChildNodes()) {
@@ -34,14 +33,14 @@ function RemoveChildren(parentNode) {
     }
 }
 
-//function to remove scroll bar
+//Remove scroll bar
 function RemoveScrollBar(container) {
-    if (dojo.byId(container.id + 'scrollbar_track')) {
-        container.removeChild(dojo.byId(container.id + 'scrollbar_track'));
+    if (dojo.byId(container.id + "scrollbar_track")) {
+        container.removeChild(dojo.byId(container.id + "scrollbar_track"));
     }
 }
 
-//function to get the extent based on the mappoint
+//Get the extent based on the map-point
 function GetInfoWindowBrowserMapExtent(mapPoint) {
     var width = map.extent.getWidth();
     var height = map.extent.getHeight();
@@ -52,7 +51,7 @@ function GetInfoWindowBrowserMapExtent(mapPoint) {
     return new esri.geometry.Extent(xmin, ymin, xmax, ymax, map.spatialReference);
 }
 
-//function to get the extent based on the mappoint
+//Get the extent based on the map point
 function GetBrowserMapExtent(mapPoint) {
     var circle = new esri.geometry.Polygon(map.spatialReference);
     var ring = []; // point that make up the circle
@@ -60,7 +59,7 @@ function GetBrowserMapExtent(mapPoint) {
     var pts = 4; // number of points on the circle
     var angle = 360 / pts; // used to compute points on the circle
     for (var i = 1; i <= pts; i++) {
-        // convert angle to raidans
+        // convert angle to radians
         var radians = i * angle * Math.PI / 180;
         ring.push([Number(mapPoint.x) + radius * Math.cos(radians), Number(mapPoint.y) + radius * Math.sin(radians)]);
     }
@@ -78,7 +77,7 @@ function GetBrowserMapExtent(mapPoint) {
     return new esri.geometry.Extent(xmin, ymin, xmax, ymax, map.spatialReference);
 }
 
-//function to get the extent based on the mappoint
+//Get the extent based on the map-point
 function GetInfoWindowMobileMapExtent(mapPoint) {
     var width = map.extent.getWidth();
     var height = map.extent.getHeight();
@@ -89,7 +88,7 @@ function GetInfoWindowMobileMapExtent(mapPoint) {
     return new esri.geometry.Extent(xmin, ymin, xmax, ymax, map.spatialReference);
 }
 
-//function to get the extent based on the mappoint
+//Get the extent based on the map-point
 function GetMobileMapExtent(mapPoint) {
     var circle = new esri.geometry.Polygon(map.spatialReference);
     var ring = []; // point that make up the circle
@@ -97,7 +96,7 @@ function GetMobileMapExtent(mapPoint) {
     var pts = 4; // number of points on the circle
     var angle = 360 / pts; // used to compute points on the circle
     for (var i = 1; i <= pts; i++) {
-        // convert angle to raidans
+        // convert angle to radians
         var radians = i * angle * Math.PI / 180;
         ring.push([mapPoint.x + radius * Math.cos(radians), mapPoint.y + radius * Math.sin(radians)]);
     }
@@ -114,42 +113,42 @@ function GetMobileMapExtent(mapPoint) {
     var ymax = ymin + height;
     return new esri.geometry.Extent(xmin, ymin, xmax, ymax, map.spatialReference);
 }
-//function to trim string
+//Trim string
 String.prototype.trim = function () {
     return this.replace(/^\s*/, "").replace(/\s*$/, "");
-}
+};
 
-//Function to append ... for a string
+//Append ... for a string
 String.prototype.trimString = function (len) {
     return (this.length > len) ? this.substring(0, len) + "..." : this;
-}
+};
 
-//function to convert string to bool
+//Convert string to bool
 String.prototype.bool = function () {
     return (/^true$/i).test(this);
 };
 
-//function to restrict the maximum no of characters in the textarea control
+//Restrict the maximum no of characters in the text area control
 function imposeMaxLength(Object, MaxLen) {
     return (Object.value.length <= MaxLen);
 }
 
-//function to show error message span
+//Show error message span
 function ShowSpanErrorMessage(controlId, message) {
     dojo.byId(controlId).style.display = "block";
     dojo.byId(controlId).innerHTML = message;
 }
 
-//function for displaying the current location of the user
+//Displaying the current location of the user
 function ShowMyLocation() {
     if (dojo.coords("divLayerContainer").h > 0) {
         dojo.replaceClass("divLayerContainer", "hideContainerHeight", "showContainerHeight");
-        dojo.byId('divLayerContainer').style.height = '0px';
+        dojo.byId("divLayerContainer").style.height = "0px";
     }
     if (!isMobileDevice) {
         if (dojo.coords("divAddressHolder").h > 0) {
             dojo.replaceClass("divAddressHolder", "hideContainerHeight", "showContainerHeight");
-            dojo.byId('divAddressHolder').style.height = '0px';
+            dojo.byId("divAddressHolder").style.height = "0px";
         }
     }
     if (!Modernizr.geolocation) {
@@ -159,116 +158,70 @@ function ShowMyLocation() {
                 map.setExtent(GetBrowserMapExtent(selectedPark));
             }
         }
-    }
-    else {
+    } else {
         navigator.geolocation.getCurrentPosition(
-	        	function (position) {
-	        	    ShowProgressIndicator();
-	        	    mapPoint = new esri.geometry.Point(position.coords.longitude, position.coords.latitude, new esri.SpatialReference({ wkid: 4326 }));
-	        	    var graphicCollection = new esri.geometry.Multipoint(new esri.SpatialReference({ wkid: 4326 }));
-	        	    graphicCollection.addPoint(mapPoint);
-	        	    geometryService.project([graphicCollection], map.spatialReference, function (newPointCollection) {
-	        	        mapPoint = newPointCollection[0].getPoint(0);
-	        	        if (isParkSearched) {
-	        	            var symbol = new esri.symbol.PictureMarkerSymbol(locatorMarkupSymbolPath, 25, 25);
-	        	            var attr = { Address: "My Location" };
-	        	            var graphic = new esri.Graphic(mapPoint, symbol, attr, null);
-	        	            map.getLayer(tempGraphicsLayerId).add(graphic);
-	        	            QueryLayer(null, mapPoint, true);
-	        	            if (!isMobileDevice) {
-	        	                map.setExtent(GetBrowserMapExtent(selectedPark));
-	        	            }
-	        	            isParkSearched = false;
-	        	        }
-	        	        else {
-	        	            LocateAddressOnMap();
-	        	        }
-	        	    });
-	        	},
-		function (error) {
-		    HideProgressIndicator();
-		    switch (error.code) {
-		        case error.TIMEOUT:
-		            alert(messages.getElementsByTagName("geolocationTimeout")[0].childNodes[0].nodeValue);
-		            break;
-		        case error.POSITION_UNAVAILABLE:
-		            alert(messages.getElementsByTagName("geolocationPositionUnavailable")[0].childNodes[0].nodeValue);
-		            break;
-		        case error.PERMISSION_DENIED:
-		            alert(messages.getElementsByTagName("geolocationPermissionDenied")[0].childNodes[0].nodeValue);
-		            break;
-		        case error.UNKNOWN_ERROR:
-		            alert(messages.getElementsByTagName("geolocationUnKnownError")[0].childNodes[0].nodeValue);
-		            break;
-		    }
-		    if (isParkSearched) {
-		        QueryLayer(null, null, true);
-		        setTimeout(function () {
-		            if (!isMobileDevice) {
-		                map.setExtent(GetBrowserMapExtent(selectedPark));
-		            }
 
-		        }, 500);
-		    }
-		}, { timeout: 10000 });
+        function (position) {
+            ShowProgressIndicator();
+            mapPoint = new esri.geometry.Point(position.coords.longitude, position.coords.latitude, new esri.SpatialReference({
+                wkid: 4326
+            }));
+            var graphicCollection = new esri.geometry.Multipoint(new esri.SpatialReference({
+                wkid: 4326
+            }));
+            graphicCollection.addPoint(mapPoint);
+            geometryService.project([graphicCollection], map.spatialReference, function (newPointCollection) {
+                mapPoint = newPointCollection[0].getPoint(0);
+                if (isParkSearched) {
+                    var symbol = new esri.symbol.PictureMarkerSymbol(locatorSettings.DefaultLocatorSymbol, locatorSettings.MarkupSymbolSize.width, locatorSettings.MarkupSymbolSize.height);
+                    var attr = {
+                        Address: "My Location"
+                    };
+                    var graphic = new esri.Graphic(mapPoint, symbol, attr, null);
+                    map.getLayer(tempGraphicsLayerId).add(graphic);
+                    QueryLayer(null, mapPoint, true);
+                    if (!isMobileDevice) {
+                        map.setExtent(GetBrowserMapExtent(selectedPark));
+                    }
+                    isParkSearched = false;
+                } else {
+                    LocateAddressOnMap();
+                }
+            });
+        },
+
+        function (error) {
+            HideProgressIndicator();
+            switch (error.code) {
+                case error.TIMEOUT:
+                    alert(messages.getElementsByTagName("geolocationTimeout")[0].childNodes[0].nodeValue);
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert(messages.getElementsByTagName("geolocationPositionUnavailable")[0].childNodes[0].nodeValue);
+                    break;
+                case error.PERMISSION_DENIED:
+                    alert(messages.getElementsByTagName("geolocationPermissionDenied")[0].childNodes[0].nodeValue);
+                    break;
+                case error.UNKNOWN_ERROR:
+                    alert(messages.getElementsByTagName("geolocationUnKnownError")[0].childNodes[0].nodeValue);
+                    break;
+            }
+            if (isParkSearched) {
+                QueryLayer(null, null, true);
+                setTimeout(function () {
+                    if (!isMobileDevice) {
+                        map.setExtent(GetBrowserMapExtent(selectedPark));
+                    }
+
+                }, 500);
+            }
+        }, {
+            timeout: 10000
+        });
     }
 }
 
-////function to handle orientation change event handler
-//function OrientationChanged() {
-//    orientationChange = true;
-//    if (map) {
-//        var timeout = (isMobileDevice && isiOS) ? 100 : 500;
-//        map.infoWindow.hide();
-//        setTimeout(function () {
-//            if (isMobileDevice) {
-//                map.reposition();
-//                map.resize();
-//                SetHeightAddressResults();
-//                SetHeightSplashScreen();
-//                SetHeightComments();
-//                SetHeightGalleryDetails();
-//                SetHeightImage();
-//                SetHeightViewDirections();
-//                SetHeightSearchResults();
-//                SetHeightActivityView();
-//                SetHeightCmtControls();
-//                SetHeightActivitySearchListView();
-//                if (dojo.byId("divActivity")) {
-//                    dojo.byId("divActivity").style.width = (dojo.window.getBox().w - 50) + "px";
-//                }
-//                if (dojo.byId("divPhoto")) {
-//                    dojo.byId("divPhoto").style.width = (dojo.window.getBox().w - 20) + "px";
-//                }
-//                setTimeout(function () {
-//                    SetHeightViewDetails();
-//                }, 1500);
-//                setTimeout(function () {
-//                    if (selectedPark) {
-//                        map.setExtent(GetInfoWindowMobileMapExtent(selectedPark));
-//                    }
-//                    else if (mapPoint) {
-//                        map.setExtent(GetInfoWindowMobileMapExtent(mapPoint));
-//                    }
-
-
-//                    orientationChange = false;
-//                    return;
-//                }, 1000);
-//            }
-//            else {
-//                setTimeout(function () {
-//                    if (selectedPark) {
-//                        map.setExtent(GetInfoWindowBrowserMapExtent(selectedPark));
-//                    }
-//                    orientationChange = false;
-//                }, 500);
-//            }
-//        }, timeout);
-//    }
-//}
-
-//function to handle orientation change event handler
+//Handle orientation change event
 function OrientationChanged() {
     orientationChange = true;
     if (map) {
@@ -287,7 +240,6 @@ function OrientationChanged() {
                 SetHeightSearchResults();
                 SetHeightActivityView();
                 SetHeightCmtControls();
-                SetHeightActivitySearchListView();
                 if (dojo.byId("divActivity")) {
                     dojo.byId("divActivity").style.width = (dojo.window.getBox().w - 50) + "px";
                 }
@@ -298,22 +250,19 @@ function OrientationChanged() {
                     SetHeightViewDetails();
                 }, 1500);
                 setTimeout(function () {
-                    if (selectedPark) {
+                    if (selectedPark && (!mapPoint)) {
                         map.setExtent(GetInfoWindowMobileMapExtent(selectedPark));
-                    }
-                    else if (mapPoint) {
+                    } else if (mapPoint) {
                         map.setExtent(GetInfoWindowMobileMapExtent(mapPoint));
                     }
                     orientationChange = false;
                     return;
                 }, 1000);
-            }
-            else {
+            } else {
                 setTimeout(function () {
-                    if (selectedPark && (mapPoint == null)) {
+                    if (selectedPark && (!mapPoint)) {
                         map.setExtent(GetInfoWindowBrowserMapExtent(selectedPark));
-                    }
-                    else {
+                    } else {
                         if (map.getLayer(tempBufferLayer).graphics.length > 0) {
                             map.setExtent(map.getLayer(tempBufferLayer).graphics[0].geometry.getExtent().expand(1.6));
                         }
@@ -325,23 +274,23 @@ function OrientationChanged() {
     }
 }
 
-//function to hide splash screen container
+//Hide splash screen container
 function HideSplashScreenMessage() {
     if (dojo.isIE < 9) {
         dojo.byId("divSplashScreenContent").style.display = "none";
     }
-    dojo.addClass('divSplashScreenContainer', "opacityHideAnimation");
+    dojo.addClass("divSplashScreenContainer", "opacityHideAnimation");
     dojo.replaceClass("divSplashScreenContent", "hideContainer", "showContainer");
 }
 
-//function to set height for splash screen
+//Set height for splash screen
 function SetHeightSplashScreen() {
-    var height = (isMobileDevice) ? (dojo.window.getBox().h - 110) : (dojo.coords(dojo.byId('divSplashScreenContent')).h - 80);
-    dojo.byId('divSplashContent').style.height = (height + 10) + "px";
+    var height = (isMobileDevice) ? (dojo.window.getBox().h - 110) : (dojo.coords(dojo.byId("divSplashScreenContent")).h - 80);
+    dojo.byId("divSplashContent").style.height = (height + 10) + "px";
     CreateScrollbar(dojo.byId("divSplashContainer"), dojo.byId("divSplashContent"));
 }
 
-//function to handle resize browser event handler
+//Handle resize event
 function resizeHandler() {
     if (map) {
         map.reposition();
@@ -349,15 +298,14 @@ function resizeHandler() {
     }
 }
 
-//function to reset mapposition
+//Reset map position
 function SetMapTipPosition() {
     if (!orientationChange) {
         if (selectedGraphic) {
             var screenPoint = map.toScreen(selectedGraphic);
             if (isMobileDevice) {
                 screenPoint.y = dojo.window.getBox().h - screenPoint.y;
-            }
-            else {
+            } else {
                 screenPoint.y = map.height - screenPoint.y;
             }
             map.infoWindow.setLocation(screenPoint);
@@ -366,108 +314,98 @@ function SetMapTipPosition() {
     }
 }
 
-//function to show address container
+//Display address container
 function ShowLocateContainer() {
-    dojo.byId('txtAddress').blur();
+    dojo.byId("txtAddress").blur();
 
     if (dojo.coords("divAppContainer").h > 0) {
         dojo.replaceClass("divAppContainer", "hideContainerHeight", "showContainerHeight");
-        dojo.byId('divAppContainer').style.height = '0px';
+        dojo.byId("divAppContainer").style.height = "0px";
     }
     if (dojo.coords("divLayerContainer").h > 0) {
         dojo.replaceClass("divLayerContainer", "hideContainerHeight", "showContainerHeight");
-        dojo.byId('divLayerContainer').style.height = '0px';
+        dojo.byId("divLayerContainer").style.height = "0px";
     }
     if (isMobileDevice) {
-        dojo.byId('divAddressContainer').style.display = "block";
+        dojo.byId("divAddressContainer").style.display = "block";
         dojo.replaceClass("divAddressHolder", "showContainer", "hideContainer");
         dojo.byId("txtAddress").value = dojo.byId("txtAddress").getAttribute("defaultAddress");
-        if (dojo.byId("tdSearchPark").className == "tdSearchByPark") {
+        if (dojo.byId("tdSearchPark").className === "tdSearchByPark") {
             dojo.byId("txtAddress").value = dojo.byId("txtAddress").getAttribute("defaultParkName");
         }
-    }
-    else {
+    } else {
         if (dojo.coords("divAddressHolder").h > 0) {
             dojo.replaceClass("divAddressHolder", "hideContainerHeight", "showContainerHeight");
-            dojo.byId('divAddressHolder').style.height = '0px';
-            dojo.byId('txtAddress').blur();
-        }
-        else {
-            dojo.byId('divAddressHolder').style.height = "310px";
+            dojo.byId("divAddressHolder").style.height = "0px";
+            dojo.byId("txtAddress").blur();
+        } else {
+            dojo.byId("txtAddress").style.color = "gray";
+            dojo.byId("divAddressHolder").style.height = "310px";
             dojo.replaceClass("divAddressHolder", "showContainerHeight", "hideContainerHeight");
             setTimeout(function () {
-                dojo.byId('txtAddress').style.verticalAlign = "middle";
+                dojo.byId("txtAddress").style.verticalAlign = "middle";
             }, 500);
             dojo.byId("txtAddress").value = dojo.byId("txtAddress").getAttribute("defaultAddress");
-            if (dojo.byId("tdSearchPark").className == "tdSearchByPark") {
+            if (dojo.byId("tdSearchPark").className === "tdSearchByPark") {
                 dojo.byId("txtAddress").value = dojo.byId("txtAddress").getAttribute("defaultParkName");
             }
         }
     }
 
-    if (dojo.byId("tdSearchActivity").className == "tdSearchByActivity") {
+    if (dojo.byId("tdSearchActivity").className === "tdSearchByActivity") {
         ShowActivitySearchView();
     }
-    RemoveChildren(dojo.byId('tblAddressResults'));
+    RemoveChildren(dojo.byId("tblAddressResults"));
     resizeHandler();
     SetHeightAddressResults();
 }
 
-//function to hide address container
+//Hide address container
 function HideAddressContainer() {
     if (isMobileDevice) {
         setTimeout(function () {
-            dojo.byId('divAddressContainer').style.display = "none";
+            dojo.byId("divAddressContainer").style.display = "none";
         }, 500);
         dojo.replaceClass("divAddressHolder", "hideContainerHeight", "showContainerHeight");
-    }
-    else {
+    } else {
         dojo.replaceClass("divAddressHolder", "hideContainerHeight", "showContainerHeight");
-        dojo.byId('divAddressHolder').style.height = '0px';
+        dojo.byId("divAddressHolder").style.height = "0px";
     }
 }
 
-//function to set height and create scrollbar for address results
 function SetHeightAddressResults() {
-    var height = (isMobileDevice) ? (dojo.window.getBox().h - 50) : dojo.coords(dojo.byId('divAddressHolder')).h;
+    var height = (isMobileDevice) ? (dojo.window.getBox().h - 50) : dojo.coords(dojo.byId("divAddressHolder")).h;
     if (height > 0) {
-        dojo.byId('divAddressScrollContent').style.height = (height - ((!isTablet) ? 145 : 175)) + "px";
+        dojo.byId("divAddressScrollContent").style.height = (height - ((!isTablet) ? 145 : 175)) + "px";
     }
     if (isMobileDevice) {
-        dojo.byId('divPodAddressScrollContent').style.height = (height - 100) + "px";
-        dojo.byId('divAddressScrollContent').style.height = (height - 130) + "px";
+        dojo.byId("divPodAddressScrollContent").style.height = (height - 100) + "px";
+        dojo.byId("divAddressScrollContent").style.height = (height - 130) + "px";
         dojo.byId("tdSearchAddress").style.width = ((dojo.window.getBox().w - 100) / 3) + "px";
         dojo.byId("tdSearchPark").style.width = ((dojo.window.getBox().w - 100) / 3) + "px";
         dojo.byId("tdSearchActivity").style.width = ((dojo.window.getBox().w - 100) / 3) + "px";
         dojo.byId("divAddressPlaceHolder").style.width = (dojo.window.getBox().w - 30) + "px";
     }
     CreateScrollbar(dojo.byId("divAddressScrollContainer"), dojo.byId("divAddressScrollContent"));
-    CreateScrollbar(dojo.byId('divPodAddressScrollContainer'), dojo.byId('divPodAddressScrollContent'));
+    CreateScrollbar(dojo.byId("divPodAddressScrollContainer"), dojo.byId("divPodAddressScrollContent"));
 }
 
 function SetHeightActivityView() {
     if (isMobileDevice) {
         var height = (dojo.window.getBox().h - 110);
-        dojo.byId('divActivityContent').style.height = (height) + "px";
+        dojo.byId("divActivityContent").style.height = (height) + "px";
     }
     CreateScrollbar(dojo.byId("divActivityContainer"), dojo.byId("divActivityContent"));
 }
 
-function SetHeightActivitySearchListView() {
-    var height = (isMobileDevice) ? (dojo.window.getBox().h - 110) : (dojo.coords(dojo.byId('divAddressHolder')).h - 110);
-    dojo.byId('divActivitySearchListContent').style.height = (height) + "px";
-    CreateScrollbar(dojo.byId("divActivitySearchListContainer"), dojo.byId("divActivitySearchListContent"));
-}
-
-//Function to open login page for facebook, twitter, email
+//Create the tiny URL with current extent and selected feature
 function ShareLink(ext) {
     tinyUrl = null;
-    mapExtent = GetMapExtent();
+    var mapExtent = GetMapExtent();
     var url = esri.urlToObject(window.location.toString());
     if (selectedParkID) {
         var urlStr = encodeURI(url.path) + "?selectedParkID=" + selectedParkID;
-    }
-    else {
+    } else {
         var urlStr = encodeURI(url.path) + "?extent=" + mapExtent;
     }
     url = dojo.string.substitute(mapSharingOptions.TinyURLServiceURL, [urlStr]);
@@ -485,21 +423,20 @@ function ShareLink(ext) {
             if (ext) {
                 if (dojo.coords("divLayerContainer").h > 0) {
                     dojo.replaceClass("divLayerContainer", "hideContainerHeight", "showContainerHeight");
-                    dojo.byId('divLayerContainer').style.height = '0px';
+                    dojo.byId("divLayerContainer").style.height = "0px";
                 }
                 if (!isMobileDevice) {
                     if (dojo.coords("divAddressHolder").h > 0) {
                         dojo.replaceClass("divAddressHolder", "hideContainerHeight", "showContainerHeight");
-                        dojo.byId('divAddressHolder').style.height = '0px';
+                        dojo.byId("divAddressHolder").style.height = "0px";
                     }
                 }
                 var cellHeight = (isMobileDevice || isTablet) ? 81 : 60;
                 if (dojo.coords("divAppContainer").h > 0) {
                     dojo.replaceClass("divAppContainer", "hideContainerHeight", "showContainerHeight");
-                    dojo.byId('divAppContainer').style.height = '0px';
-                }
-                else {
-                    dojo.byId('divAppContainer').style.height = cellHeight + "px";
+                    dojo.byId("divAppContainer").style.height = "0px";
+                } else {
+                    dojo.byId("divAppContainer").style.height = cellHeight + "px";
                     dojo.replaceClass("divAppContainer", "showContainerHeight", "hideContainerHeight");
                 }
             }
@@ -516,11 +453,11 @@ function ShareLink(ext) {
     }, 6000);
 }
 
-//Function to open login page for facebook,tweet,email
+//Open login page for facebook,tweet and open Email client with shared link for Email
 function Share(site) {
     if (dojo.coords("divAppContainer").h > 0) {
         dojo.replaceClass("divAppContainer", "hideContainerHeight", "showContainerHeight");
-        dojo.byId('divAppContainer').style.height = '0px';
+        dojo.byId("divAppContainer").style.height = "0px";
     }
     if (tinyUrl) {
         switch (site) {
@@ -534,14 +471,13 @@ function Share(site) {
                 parent.location = dojo.string.substitute(mapSharingOptions.ShareByMailLink, [tinyUrl]);
                 break;
         }
-    }
-    else {
+    } else {
         alert(messages.getElementsByTagName("tinyURLEngine")[0].childNodes[0].nodeValue);
         return;
     }
 }
 
-//Function to get map Extent
+//Get map Extent
 function GetMapExtent() {
     var extents = map.extent.xmin.toString() + ",";
     extents += map.extent.ymin.toString() + ",";
@@ -550,31 +486,34 @@ function GetMapExtent() {
     return (extents);
 }
 
-//Function to get the query string value of the provided key if not found the function returns empty string
+//Get the query string value of the provided key if not found the function returns empty string
 function GetQuerystring(key) {
     var _default;
-    if (_default == null) _default = "";
+    if (!_default) {
+        _default = "";
+    }
     key = key.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
     var regex = new RegExp("[\\?&]" + key + "=([^&#]*)");
     var qs = regex.exec(window.location.href);
-    if (qs == null)
+    if (!qs) {
         return _default;
-    else
+    } else {
         return qs[1];
+    }
 }
 
-//function to show progress indicator
+//Show progress indicator
 function ShowProgressIndicator() {
     loadingIndicatorCounter++;
-    dojo.byId('divLoadingIndicator').style.display = "block";
+    dojo.byId("divLoadingIndicator").style.display = "block";
 }
 
-//function to hide progress indicator
+//Hide progress indicator
 function HideProgressIndicator() {
-    dojo.byId('divLoadingIndicator').style.display = "none";
+    dojo.byId("divLoadingIndicator").style.display = "none";
 }
 
-//function to create scroll-bar
+//Create scroll-bar
 function CreateScrollbar(container, content) {
     var yMax;
     var pxLeft, pxTop, xCoord, yCoord;
@@ -583,17 +522,16 @@ function CreateScrollbar(container, content) {
     this.container = container;
     this.content = content;
     content.scrollTop = 0;
-    if (dojo.byId(container.id + 'scrollbar_track')) {
-        RemoveChildren(dojo.byId(container.id + 'scrollbar_track'));
-        container.removeChild(dojo.byId(container.id + 'scrollbar_track'));
+    if (dojo.byId(container.id + "scrollbar_track")) {
+        RemoveChildren(dojo.byId(container.id + "scrollbar_track"));
+        container.removeChild(dojo.byId(container.id + "scrollbar_track"));
     }
-    if (!dojo.byId(container.id + 'scrollbar_track')) {
-        scrollbar_track = document.createElement('div');
+    if (!dojo.byId(container.id + "scrollbar_track")) {
+        scrollbar_track = document.createElement("div");
         scrollbar_track.id = container.id + "scrollbar_track";
         scrollbar_track.className = "scrollbar_track";
-    }
-    else {
-        scrollbar_track = dojo.byId(container.id + 'scrollbar_track');
+    } else {
+        scrollbar_track = dojo.byId(container.id + "scrollbar_track");
     }
 
     var containerHeight = dojo.coords(container);
@@ -602,50 +540,56 @@ function CreateScrollbar(container, content) {
         height = 0;
     }
     scrollbar_track.style.height = height + "px";
-    scrollbar_track.style.right = 5 + 'px';
+    scrollbar_track.style.right = 5 + "px";
 
-    var scrollbar_handle = document.createElement('div');
-    scrollbar_handle.className = 'scrollbar_handle';
+    var scrollbar_handle = document.createElement("div");
+    scrollbar_handle.className = "scrollbar_handle";
     scrollbar_handle.id = container.id + "scrollbar_handle";
 
     scrollbar_track.appendChild(scrollbar_handle);
     container.appendChild(scrollbar_track);
 
     if ((content.scrollHeight - content.offsetHeight) <= 5) {
-        scrollbar_handle.style.display = 'none';
-        scrollbar_track.style.display = 'none';
+        scrollbar_handle.style.display = "none";
+        scrollbar_track.style.display = "none";
         return;
-    }
-    else {
-        scrollbar_handle.style.display = 'block';
-        scrollbar_track.style.display = 'block';
-        scrollbar_handle.style.height = Math.max(this.content.offsetHeight * (this.content.offsetHeight / this.content.scrollHeight), 25) + 'px';
+    } else {
+        scrollbar_handle.style.display = "block";
+        scrollbar_track.style.display = "block";
+        scrollbar_handle.style.height = Math.max(this.content.offsetHeight * (this.content.offsetHeight / this.content.scrollHeight), 25) + "px";
         yMax = this.content.offsetHeight - scrollbar_handle.offsetHeight;
-        yMax = yMax - 5; //for getting rounded bottom of handel
+        yMax = yMax - 5; //for getting rounded bottom of handle
         if (window.addEventListener) {
-            content.addEventListener('DOMMouseScroll', ScrollDiv, false);
+            content.addEventListener("DOMMouseScroll", ScrollDiv, false);
         }
         content.onmousewheel = function (evt) {
             ScrollDiv(evt);
-        }
+        };
     }
 
     function ScrollDiv(evt) {
-        var evt = window.event || evt //equalize event object
-        var delta = evt.detail ? evt.detail * (-120) : evt.wheelDelta //delta returns +120 when wheel is scrolled up, -120 when scrolled down
+        var evt = window.event || evt; //equalize event object
+        var delta = evt.detail ? evt.detail * (-120) : evt.wheelDelta; //delta returns +120 when wheel is scrolled up, -120 when scrolled down
         pxTop = scrollbar_handle.offsetTop;
 
         if (delta <= -120) {
             var y = pxTop + 10;
-            if (y > yMax) y = yMax // Limit vertical movement
-            if (y < 0) y = 0 // Limit vertical movement
+            if (y > yMax) {
+                y = yMax;
+            } // Limit vertical movement
+            if (y < 0) {
+                y = 0;
+            } // Limit vertical movement
             scrollbar_handle.style.top = y + "px";
             content.scrollTop = Math.round(scrollbar_handle.offsetTop / yMax * (content.scrollHeight - content.offsetHeight));
-        }
-        else {
+        } else {
             var y = pxTop - 10;
-            if (y > yMax) y = yMax // Limit vertical movement
-            if (y < 0) y = 2 // Limit vertical movement
+            if (y > yMax) {
+                y = yMax;
+            } // Limit vertical movement
+            if (y < 0) {
+                y = 2;
+            } // Limit vertical movement
             scrollbar_handle.style.top = (y - 2) + "px";
             content.scrollTop = Math.round(scrollbar_handle.offsetTop / yMax * (content.scrollHeight - content.offsetHeight));
         }
@@ -655,26 +599,28 @@ function CreateScrollbar(container, content) {
     scrollbar_track.onclick = function (evt) {
         if (!isHandleClicked) {
             evt = (evt) ? evt : event;
-            pxTop = scrollbar_handle.offsetTop // Sliders vertical position at start of slide.
+            pxTop = scrollbar_handle.offsetTop; // Sliders vertical position at start of slide.
             var offsetY;
             if (!evt.offsetY) {
                 var coords = dojo.coords(evt.target);
                 offsetY = evt.layerY - coords.t;
-            }
-            else
+            } else {
                 offsetY = evt.offsetY;
+            }
             if (offsetY < scrollbar_handle.offsetTop) {
                 scrollbar_handle.style.top = offsetY + "px";
                 content.scrollTop = Math.round(scrollbar_handle.offsetTop / yMax * (content.scrollHeight - content.offsetHeight));
-            }
-            else if (offsetY > (scrollbar_handle.offsetTop + scrollbar_handle.clientHeight)) {
+            } else if (offsetY > (scrollbar_handle.offsetTop + scrollbar_handle.clientHeight)) {
                 var y = offsetY - scrollbar_handle.clientHeight;
-                if (y > yMax) y = yMax // Limit vertical movement
-                if (y < 0) y = 0 // Limit vertical movement
+                if (y > yMax) {
+                    y = yMax;
+                } // Limit vertical movement
+                if (y < 0) {
+                    y = 0;
+                } // Limit vertical movement
                 scrollbar_handle.style.top = y + "px";
                 content.scrollTop = Math.round(scrollbar_handle.offsetTop / yMax * (content.scrollHeight - content.offsetHeight));
-            }
-            else {
+            } else {
                 return;
             }
         }
@@ -686,24 +632,32 @@ function CreateScrollbar(container, content) {
         isHandleClicked = true;
         evt = (evt) ? evt : event;
         evt.cancelBubble = true;
-        if (evt.stopPropagation) evt.stopPropagation();
-        pxTop = scrollbar_handle.offsetTop // Sliders vertical position at start of slide.
-        yCoord = evt.screenY // Vertical mouse position at start of slide.
-        document.body.style.MozUserSelect = 'none';
-        document.body.style.userSelect = 'none';
+        if (evt.stopPropagation) {
+            evt.stopPropagation();
+        }
+        pxTop = scrollbar_handle.offsetTop; // Sliders vertical position at start of slide.
+        yCoord = evt.screenY; // Vertical mouse position at start of slide.
+        document.body.style.MozUserSelect = "none";
+        document.body.style.userSelect = "none";
         document.onselectstart = function () {
             return false;
-        }
+        };
         document.onmousemove = function (evt) {
             evt = (evt) ? evt : event;
             evt.cancelBubble = true;
-            if (evt.stopPropagation) evt.stopPropagation();
+            if (evt.stopPropagation) {
+                evt.stopPropagation();
+            }
             var y = pxTop + evt.screenY - yCoord;
-            if (y > yMax) y = yMax // Limit vertical movement
-            if (y < 0) y = 0 // Limit vertical movement
+            if (y > yMax) {
+                y = yMax;
+            } // Limit vertical movement
+            if (y < 0) {
+                y = 0;
+            } // Limit vertical movement
             scrollbar_handle.style.top = y + "px";
             content.scrollTop = Math.round(scrollbar_handle.offsetTop / yMax * (content.scrollHeight - content.offsetHeight));
-        }
+        };
     };
 
     document.onmouseup = function () {
@@ -738,21 +692,26 @@ function CreateScrollbar(container, content) {
     function touchMoveHandler(e) {
         var touch = e.touches[0];
         e.cancelBubble = true;
-        if (e.stopPropagation) e.stopPropagation();
+        if (e.stopPropagation) {
+            e.stopPropagation();
+        }
         e.preventDefault();
 
         pxTop = scrollbar_handle.offsetTop;
         var y;
         if (startPos > touch.pageY) {
             y = pxTop + 10;
-        }
-        else {
+        } else {
             y = pxTop - 10;
         }
 
-        //setting scrollbar handel
-        if (y > yMax) y = yMax // Limit vertical movement
-        if (y < 0) y = 0 // Limit vertical movement
+        //setting scrollbar handle
+        if (y > yMax) {
+            y = yMax;
+        } // Limit vertical movement
+        if (y < 0) {
+            y = 0;
+        } // Limit vertical movement
         scrollbar_handle.style.top = y + "px";
 
         //setting content position
@@ -763,12 +722,15 @@ function CreateScrollbar(container, content) {
     }
 
     function touchEndHandler(e) {
-        scrollingTimer = setTimeout(function () { clearTimeout(scrollingTimer); scrolling = false; }, 100);
+        scrollingTimer = setTimeout(function () {
+            clearTimeout(scrollingTimer);
+            scrolling = false;
+        }, 100);
     }
     //touch scrollbar end
 }
 
-//Function for validating Email in comments tab
+//Validate Email
 function CheckMailFormat(emailValue) {
     var pattern = /^([a-zA-Z][a-zA-Z0-9\_\-\.]*\@[a-zA-Z0-9\-]*\.[a-zA-Z]{2,4})?$/i
     if (pattern.test(emailValue)) {
@@ -778,84 +740,78 @@ function CheckMailFormat(emailValue) {
     }
 }
 
-//function to set height and create scroll bar for comments
 function SetHeightComments() {
-    var height = (isMobileDevice) ? (dojo.window.getBox().h) : (dojo.coords(dojo.byId('divInfoContent')).h - 10);
+    var height = (isMobileDevice) ? (dojo.window.getBox().h) : (dojo.coords(dojo.byId("divInfoContent")).h - 10);
     if (height > 0) {
-        dojo.byId('divCommentsContent').style.height = (height - ((isBrowser) ? 115 : 150)) + "px";
+        dojo.byId("divCommentsContent").style.height = (height - ((isBrowser) ? 115 : 150)) + "px";
     }
     CreateScrollbar(dojo.byId("divCommentsContainer"), dojo.byId("divCommentsContent"));
     CreateScrollbar(dojo.byId("divCommentContainer"), dojo.byId("divCommentHolder"));
     if (isMobileDevice) {
-        dojo.byId('divInfoComments').style.width = dojo.window.getBox().w - 15 + "px";
+        dojo.byId("divInfoComments").style.width = dojo.window.getBox().w - 15 + "px";
     }
 }
 
-//function to set height and create scroll bar for search results
 function SetHeightSearchResults() {
-    var height = (isMobileDevice) ? (dojo.window.getBox().h) : (dojo.coords(dojo.byId('divResultContent')).h - 10);
+    var height = (isMobileDevice) ? (dojo.window.getBox().h) : (dojo.coords(dojo.byId("divResultContent")).h - 10);
     if (height > 0) {
-        dojo.byId('divResultDataContent').style.height = (height - ((isBrowser) ? 60 : 65)) + "px";
+        dojo.byId("divResultDataContent").style.height = (height - ((isBrowser) ? 60 : 65)) + "px";
     }
     CreateScrollbar(dojo.byId("divResultDataContainer"), dojo.byId("divResultDataContent"));
 
 }
 
-//function to set height for view details
 function SetHeightViewDetails() {
-    var height = (isMobileDevice) ? dojo.window.getBox().h : dojo.coords(dojo.byId('divInfoContent')).h;
+    var height = (isMobileDevice) ? dojo.window.getBox().h : dojo.coords(dojo.byId("divInfoContent")).h;
     if (height > 0) {
-        dojo.byId('divInfoDetailsScroll').style.height = (height - ((isBrowser) ? 50 : 65)) + "px";
+        dojo.byId("divInfoDetailsScroll").style.height = (height - ((isBrowser) ? 50 : 65)) + "px";
     }
     CreateScrollbar(dojo.byId("divInfoDetails"), dojo.byId("divInfoDetailsScroll"));
 }
 
 function SetHeightGalleryDetails() {
-    var height = (isMobileDevice) ? dojo.window.getBox().h : dojo.coords(dojo.byId('divInfoContent')).h;
+    var height = (isMobileDevice) ? dojo.window.getBox().h : dojo.coords(dojo.byId("divInfoContent")).h;
     if (height > 0) {
-        dojo.byId('divInfoPhotoGalleryContent').style.height = (height - ((isBrowser) ? 55 : 65)) + "px";
+        dojo.byId("divInfoPhotoGalleryContent").style.height = (height - ((isBrowser) ? 55 : 65)) + "px";
     }
     CreateScrollbar(dojo.byId("divInfoPhotoGalleryContainer"), dojo.byId("divInfoPhotoGalleryContent"));
 }
 
 function SetHeightImage() {
-    var height = (isMobileDevice) ? dojo.window.getBox().h : dojo.coords(dojo.byId('divInfoContent')).h;
-    var width = (isMobileDevice) ? dojo.window.getBox().w : dojo.coords(dojo.byId('divInfoContent')).h;
+    var height = (isMobileDevice) ? dojo.window.getBox().h : dojo.coords(dojo.byId("divInfoContent")).h;
+    var width = (isMobileDevice) ? dojo.window.getBox().w : dojo.coords(dojo.byId("divInfoContent")).h;
     if (height > 0) {
-        dojo.byId('divMblImage').style.height = (height - 65) + "px";
+        dojo.byId("divMblImage").style.height = (height - 65) + "px";
     }
-    //    dojo.byId("imgMblAttachment").style.maxHeight = (height - 65) + "px";
     dojo.byId("imgMblAttachment").style.maxWidth = (width - 20) + "px";
     dojo.byId("imgMblAttachment").style.height = (height - 65) + "px";
 }
 
-//function to set height for view directions
 function SetHeightViewDirections() {
-    var height = (isMobileDevice) ? dojo.window.getBox().h : dojo.coords(dojo.byId('divInfoContent')).h;
+    var height = (isMobileDevice) ? dojo.window.getBox().h : dojo.coords(dojo.byId("divInfoContent")).h;
 
-    dojo.byId('divInfoDirectionsScroll').style.height = (height - ((isBrowser) ? 55 : 65)) + "px";
+    dojo.byId("divInfoDirectionsScroll").style.height = (height - ((isBrowser) ? 55 : 65)) + "px";
     CreateScrollbar(dojo.byId("divInfoDirections"), dojo.byId("divInfoDirectionsScroll"));
 
-    if (dojo.byId('divNewInfoDirectionsScroll').style.display == "block") {
-        dojo.byId('divNewInfoDirectionsScroll').style.height = (height - ((isBrowser) ? 55 : 65)) + "px";
+    if (dojo.byId("divNewInfoDirectionsScroll").style.display === "block") {
+        dojo.byId("divNewInfoDirectionsScroll").style.height = (height - ((isBrowser) ? 55 : 65)) + "px";
         CreateScrollbar(dojo.byId("divInfoDirections"), dojo.byId("divNewInfoDirectionsScroll"));
     }
 }
 
-//function to show service request deatils infowindow
 function ShowServiceInfoDetails(selectedPark, attributes) {
     fromInfoWindow = true;
     newInfoLeftOffice = 0;
     newGalleryLeft = 0;
 
     if (!isMobileDevice) {
-        dojo.byId('divInfoContent').style.width = infoWindowWidth + "px";
-        dojo.byId('divInfoContent').style.height = infoWindowHeight + "px";
+        dojo.byId("divInfoContent").style.width = infoWindowWidth + "px";
+        dojo.byId("divInfoContent").style.height = infoWindowHeight + "px";
     }
 
     dojo.byId("imgComments").style.display = "block";
     if (!isMobileDevice) {
-        dojo.byId('divInfoContent').style.display = "none";
+        dojo.byId("divInfoContent").style.display = "none";
     }
 
     ShowProgressIndicator();
@@ -863,20 +819,20 @@ function ShowServiceInfoDetails(selectedPark, attributes) {
     RelationshipQuery(selectedPark, featureID, attributes, isParkSearched);
 }
 
-//Function for sorting comments according to date
+//Sort comments according to date
 function SortResultFeatures(a, b) {
-    var x = a.attributes.submitdt;
-    var y = b.attributes.submitdt;
+    var x = dojo.string.substitute(commentsInfoPopupFieldsCollection.SubmitDate, a.attributes);
+    var y = dojo.string.substitute(commentsInfoPopupFieldsCollection.SubmitDate, b.attributes);
     return ((x > y) ? -1 : ((x < y) ? 1 : 0));
 }
 
-//Function for fetching comments from Commentslayer
+//Fetch comments from layer
 function FetchComments(facilityID, isInfoView) {
     map.infoWindow.hide();
     selectedParkID = facilityID;
     var query = new esri.tasks.Query();
     var facId;
-    facilityId.replace(/\$\{([^\s\:\}]+)(?:\:([^\s\:\}]+))?\}/g, function (match, key) {
+    primaryKeyForComments.replace(/\$\{([^\s\:\}]+)(?:\:([^\s\:\}]+))?\}/g, function (match, key) {
         facId = key;
     });
 
@@ -886,36 +842,36 @@ function FetchComments(facilityID, isInfoView) {
         if (fromInfoWindow || isMobileDevice) {
             RemoveChildren(dojo.byId("divCommentsContent"));
             RemoveScrollBar(dojo.byId("divCommentsContainer"));
-        }
-        else {
+        } else {
             RemoveChildren(dojo.byId("divCommentHolder"));
             RemoveScrollBar(dojo.byId("divCommentContainer"));
         }
-        var commentsTable = dojo.create("table", { "cellspacing": "0", "style": "padding-left: 5px; padding-top: 5px;" }, dojo.byId("divCommentsContent"))
+        var commentsTable = dojo.create("table", {
+            "cellspacing": "0",
+            "style": "padding-left: 5px; padding-top: 5px;"
+        }, dojo.byId("divCommentsContent"));
         commentsTable.id = "tblComment";
         if (fromInfoWindow || isMobileDevice) {
             dojo.byId("divCommentsContent").appendChild(commentsTable);
-        }
-        else {
+        } else {
             dojo.byId("divCommentHolder").appendChild(commentsTable);
         }
         if (!isMobileDevice) {
             if (fromInfoWindow) {
                 commentsTable.style.width = (infoWindowWidth - 25) + "px";
-            }
-            else {
+            } else {
                 commentsTable.style.width = (infoBoxWidth - 20) + "px";
             }
-        }
-        else {
+        } else {
             commentsTable.style.width = "97%";
         }
 
         var commentsTBody = document.createElement("tbody");
         commentsTable.appendChild(commentsTBody);
         if (features.length > 0) {
-            features.sort(SortResultFeatures);      //function to sort comments based on submitted date
+            features.sort(SortResultFeatures); //Sort comments based on submitted date
             for (var i = 0; i < features.length; i++) {
+
                 var trComments = document.createElement("tr");
                 var commentsCell = document.createElement("td");
                 commentsCell.className = "bottomborder";
@@ -925,11 +881,11 @@ function FetchComments(facilityID, isInfoView) {
                 commentsCell.appendChild(CreateCommentRecord(features[i].attributes, controlId));
                 trComments.appendChild(commentsCell);
                 commentsTBody.appendChild(trComments);
-                CreateRatingWidget(dojo.byId('commentRating' + controlId));
-                SetRating(dojo.byId('commentRating' + controlId), features[i].attributes.rank);
+                CreateRatingWidget(dojo.byId("commentRating" + controlId));
+
+                SetRating(dojo.byId("commentRating" + controlId), dojo.string.substitute(commentsInfoPopupFieldsCollection.Rank, features[i].attributes));
             }
-        }
-        else {
+        } else {
             if (dojo.byId("tdCom")) {
                 dojo.byId("tdCom").innerHTML = "";
             }
@@ -939,14 +895,16 @@ function FetchComments(facilityID, isInfoView) {
             trComments.setAttribute("noComments", "true");
             trComments.appendChild(commentsCell);
             commentsTBody.appendChild(trComments);
+            dojo.byId("divComments").style.display = "none";
         }
         SetHeightComments();
+        HideProgressIndicator();
     }, function (err) {
         alert(err.message);
     });
 }
 
-//Funcction to get width of a control when text and font size are specified
+//Get width of a control when text and font size are specified
 String.prototype.getWidth = function (fontSize) {
     var test = document.createElement("span");
     document.body.appendChild(test);
@@ -958,9 +916,9 @@ String.prototype.getWidth = function (fontSize) {
     var w = test.offsetWidth;
     document.body.removeChild(test);
     return w;
-}
+};
 
-//function to create comment record
+//Create comment record
 function CreateCommentRecord(attributes, i) {
     var table = document.createElement("table");
     table.style.width = "100%";
@@ -986,20 +944,22 @@ function CreateCommentRecord(attributes, i) {
 
     var td1 = document.createElement("td");
     for (var j = 0; j < map.getLayer(parkCommentsLayerId).fields.length; j++) {
-        if (map.getLayer(parkCommentsLayerId).fields[j].name == "submitdt ") {
+        if (map.getLayer(parkCommentsLayerId).fields[j].name === "SUBMITDT") {
             var c = j;
             break;
         }
     }
     var date = new js.date();
-    if (attributes.submitdt == null) {
-        attributes.submitdt = showNullValueAs;
+    if (!dojo.string.substitute(commentsInfoPopupFieldsCollection.SubmitDate, attributes)) {
+        dojo.string.substitute(commentsInfoPopupFieldsCollection.SubmitDate, attributes) = showNullValueAs;
         td1.innerHTML = "Date: " + showNullValueAs;
+    } else {
 
-    }
-    else {
-        var utcMilliseconds = Number(attributes.submitdt);
-        td1.innerHTML = "Date: " + dojo.date.locale.format(date.utcToLocal(date.utcTimestampFromMs(utcMilliseconds)), { datePattern: formatDateAs, selector: "date" });
+        var utcMilliseconds = Number(dojo.string.substitute(commentsInfoPopupFieldsCollection.SubmitDate, attributes));
+        td1.innerHTML = "Date: " + dojo.date.locale.format(date.utcToLocal(date.utcTimestampFromMs(utcMilliseconds)), {
+            datePattern: formatDateAs,
+            selector: "date"
+        });
     }
 
     td1.align = "left";
@@ -1013,38 +973,34 @@ function CreateCommentRecord(attributes, i) {
     td2.id = "tdComment";
     if (isMobileDevice) {
         td2.style.width = "95%";
-    }
-    else {
+    } else {
         td2.style.width = (infoWindowWidth - 40) + "px";
     }
     td2.colSpan = 2;
-    if (attributes.comments != "null" || attributes.comments) {
-        var wordCount = attributes.comments.split(/\n/).length;
+    if (dojo.string.substitute(commentsInfoPopupFieldsCollection.Comments, attributes) !== "null" || dojo.string.substitute(commentsInfoPopupFieldsCollection.Comments, attributes)) {
+        var wordCount = dojo.string.substitute(commentsInfoPopupFieldsCollection.Comments, attributes).split(/\n/).length;
         if (wordCount > 1) {
-            var value = attributes.comments.split(/\n/)[0].length == 0 ? "<br>" : attributes.comments.split(/\n/)[0].trim();
+            var value = dojo.string.substitute(commentsInfoPopupFieldsCollection.Comments, attributes).split(/\n/)[0].length === 0 ? "<br>" : dojo.string.substitute(commentsInfoPopupFieldsCollection.Comments, attributes).split(/\n/)[0].trim();
             for (var c = 1; c < wordCount; c++) {
                 var comment;
-                if (value != "<br>") {
-                    comment = attributes.comments.split(/\n/)[c].trim().replace("", "<br>");
+                if (value !== "<br>") {
+                    comment = dojo.string.substitute(commentsInfoPopupFieldsCollection.Comments, attributes).split(/\n/)[c].trim().replace("", "<br>");
+                } else {
+                    comment = dojo.string.substitute(commentsInfoPopupFieldsCollection.Comments, attributes).split(/\n/)[c].trim();
                 }
-                else {
-                    comment = attributes.comments.split(/\n/)[c].trim();
-                }
-                value += attributes.comments.split(/\n/)[c].length == 0 ? "<br>" : comment;
+                value += dojo.string.substitute(commentsInfoPopupFieldsCollection.Comments, attributes).split(/\n/)[c].length === 0 ? "<br>" : comment;
             }
-        }
-        else {
-            value = attributes.comments;
+        } else {
+            value = dojo.string.substitute(commentsInfoPopupFieldsCollection.Comments, attributes);
         }
         td2.innerHTML += value;
 
-        if (CheckMailFormat(attributes.comments) || dojo.string.substitute(attributes.comments).match("http:") || dojo.string.substitute(attributes.comments).match("https:")) {
+        if (CheckMailFormat(dojo.string.substitute(commentsInfoPopupFieldsCollection.Comments, attributes)) || dojo.string.substitute(dojo.string.substitute(commentsInfoPopupFieldsCollection.Comments, attributes)).match("http:") || dojo.string.substitute(dojo.string.substitute(commentsInfoPopupFieldsCollection.Comments, attributes)).match("https:")) {
             td2.className = "tdBreakWord";
-        }
-        else {
+        } else {
             td2.className = "tdBreak";
         }
-        var x = attributes.comments.split(" ");
+        var x = dojo.string.substitute(commentsInfoPopupFieldsCollection.Comments, attributes).split(" ");
         for (var i in x) {
             w = x[i].getWidth(15) - 50;
             var boxWidth = (isMobileDevice) ? (dojo.window.getBox().w - 10) : (infoWindowWidth - 40);
@@ -1053,8 +1009,7 @@ function CreateCommentRecord(attributes, i) {
                 continue;
             }
         }
-    }
-    else {
+    } else {
         td2.innerHTML = showNullValueAs;
     }
     tr1.appendChild(td2);
@@ -1064,7 +1019,7 @@ function CreateCommentRecord(attributes, i) {
     return table;
 }
 
-//function to create rating control
+//Create rating control
 function CreateRatingControl(readonly, ctlId, intitalValue, numStars) {
     var ratingCtl = document.createElement("ul");
     ratingCtl.setAttribute("readonly", readonly);
@@ -1076,7 +1031,7 @@ function CreateRatingControl(readonly, ctlId, intitalValue, numStars) {
     return ratingCtl;
 }
 
-//function to create Rating widget
+//Create Rating widget
 function CreateRatingWidget(rating) {
     var numberStars = Number(rating.getAttribute("numstars"));
     var isReadOnly = String(rating.getAttribute("readonly")).bool();
@@ -1096,7 +1051,7 @@ function CreateRatingWidget(rating) {
                     dojo.addClass(ratingStars[i], isReadOnly ? "ratingStarChecked" : "ratingStarBigChecked");
                 }
             }
-        }
+        };
         li.onmouseout = function () {
             if (!isReadOnly) {
                 var ratings = Number(rating.value);
@@ -1104,13 +1059,12 @@ function CreateRatingWidget(rating) {
                 for (var i = 0; i < ratingStars.length; i++) {
                     if (i < ratings) {
                         dojo.addClass(ratingStars[i], isReadOnly ? "ratingStarChecked" : "ratingStarBigChecked");
-                    }
-                    else {
+                    } else {
                         dojo.removeClass(ratingStars[i], isReadOnly ? "ratingStarChecked" : "ratingStarBigChecked");
                     }
                 }
             }
-        }
+        };
         li.onclick = function () {
             if (!isReadOnly) {
                 rating.value = Number(this.value);
@@ -1118,17 +1072,15 @@ function CreateRatingWidget(rating) {
                 for (var i = 0; i < ratingStars.length; i++) {
                     if (i < this.value) {
                         dojo.addClass(ratingStars[i], isReadOnly ? "ratingStarChecked" : "ratingStarBigChecked");
-                    }
-                    else {
+                    } else {
                         dojo.removeClass(ratingStars[i], isReadOnly ? "ratingStarChecked" : "ratingStarBigChecked");
                     }
                 }
             }
-        }
+        };
     }
 }
 
-//Set rating for rating control
 function SetRating(control, rating) {
     control.value = rating;
     var isReadOnly = String(control.getAttribute("readonly")).bool();
@@ -1136,39 +1088,36 @@ function SetRating(control, rating) {
     for (var i = 0; i < ratingStars.length; i++) {
         if (i < rating) {
             dojo.addClass(ratingStars[i], isReadOnly ? "ratingStarChecked" : "ratingStarBigChecked");
-        }
-        else {
+        } else {
             dojo.removeClass(ratingStars[i], isReadOnly ? "ratingStarChecked" : "ratingStarBigChecked");
         }
     }
 }
 
-//function to hide Info request container
 function HideInfoContainer() {
     if (isMobileDevice) {
         setTimeout(function () {
-            dojo.byId('divInfoContainer').style.display = "none";
+            dojo.byId("divInfoContainer").style.display = "none";
             dojo.replaceClass("divInfoContent", "hideContainer", "showContainer");
         }, 500);
-    }
-    else {
+    } else {
         selectedPark = null;
         selectedGraphic = null;
         map.infoWindow.hide();
         pointAttr = null;
-        dojo.byId('divInfoContent').style.display = "none";
+        dojo.byId("divInfoContent").style.display = "none";
     }
 }
 
-//function to reset comments data
+//Reset comments data
 function ResetCommentValues() {
-    SetRating(dojo.byId('commentRating'), 0);
-    dojo.byId('txtComments').value = '';
-    document.getElementById('commentError').innerHTML = "";
-    document.getElementById('commentError').style.display = 'none';
-    dojo.byId('divAddComment').style.display = "none";
-    dojo.byId('divCommentsView').style.display = "block";
-    dojo.byId('divCommentsList').style.display = "block";
+    SetRating(dojo.byId("commentRating"), 0);
+    dojo.byId("txtComments").value = "";
+    document.getElementById("commentError").innerHTML = "";
+    document.getElementById("commentError").style.display = "none";
+    dojo.byId("divAddComment").style.display = "none";
+    dojo.byId("divCommentsView").style.display = "block";
+    dojo.byId("divCommentsList").style.display = "block";
 }
 
 function DisplayInfoWindow(selectedPark, attributes, parkSearched) {
@@ -1183,12 +1132,10 @@ function DisplayInfoWindow(selectedPark, attributes, parkSearched) {
     setTimeout(function () {
         if (!isMobileDevice) {
             map.setExtent(GetInfoWindowBrowserMapExtent(selectedPark));
-        }
-        else {
+        } else {
             if (!parkSearched) {
                 map.setExtent(GetInfoWindowMobileMapExtent(selectedPark));
-            }
-            else {
+            } else {
                 map.setExtent(GetMobileMapExtent(selectedPark));
             }
         }
@@ -1203,23 +1150,24 @@ function DisplayInfoWindow(selectedPark, attributes, parkSearched) {
             var header;
             if (dojo.string.substitute(infoWindowHeader[0].FieldName, attributes)) {
                 header = dojo.string.substitute(infoWindowHeader[0].FieldName, attributes).trimString(15);
-            }
-            else {
+            } else {
                 header = showNullValueAs;
             }
             if (map.getLayer(tempGraphicsLayerId).graphics.length > 0) {
                 if (map.getLayer(tempBufferLayer).graphics.length > 0) {
                     if (map.getLayer(tempBufferLayer).graphics[0].geometry.contains(selectedPark)) {
                         RemoveChildren(dojo.byId("divDirection"));
-                        ConfigureRoute(map.getLayer(tempGraphicsLayerId).graphics[0].geometry, selectedPark);
-                    }
-                    else {
+                        if (getDirectionsMobile) {
+                            ConfigureRoute(map.getLayer(tempGraphicsLayerId).graphics[0].geometry, selectedPark);
+                        }
+                    } else {
                         map.getLayer(routeLayerId).clear();
                     }
-                }
-                else {
+                } else {
                     RemoveChildren(dojo.byId("divDirection"));
-                    ConfigureRoute(map.getLayer(tempGraphicsLayerId).graphics[0].geometry, selectedPark);
+                    if (getDirectionsMobile) {
+                        ConfigureRoute(map.getLayer(tempGraphicsLayerId).graphics[0].geometry, selectedPark);
+                    }
                 }
             }
 
@@ -1228,35 +1176,39 @@ function DisplayInfoWindow(selectedPark, attributes, parkSearched) {
             map.infoWindow.setTitle(header, function () {
                 if (!getDirections) {
                     dojo.byId("imgDirections").style.display = "none";
-                }
-                else {
+                } else {
                     if (map.getLayer(tempBufferLayer).graphics.length > 0) {
                         dojo.byId("imgList").style.display = "block";
                         if (!map.getLayer(tempBufferLayer).graphics[0].geometry.contains(selectedPark)) {
                             dojo.byId("imgDirections").style.display = "none";
+                        } else {
+                            if (getDirectionsMobile) {
+                                dojo.byId("imgDirections").style.display = "block";
+                            }
                         }
-
-                        else {
-                            dojo.byId("imgDirections").style.display = "block";
-                        }
-                    }
-                    else if (map.getLayer(tempGraphicsLayerId).graphics.length > 0) {
+                    } else if (map.getLayer(tempGraphicsLayerId).graphics.length > 0) {
                         if (isParkSearched) {
                             dojo.byId("imgList").style.display = "block";
                         }
-                        dojo.byId("imgDirections").style.display = "block";
-                    }
-                    else {
+                        if (getDirectionsMobile) {
+                            dojo.byId("imgDirections").style.display = "block";
+                        }
+                    } else {
                         dojo.byId("imgDirections").style.display = "none";
                     }
                 }
 
                 if (parkSearched) {
                     isParkSearched = true;
-                    dojo.byId("spanDirectionHeader").innerHTML = 'Directions to ' + dojo.string.substitute(parkName, attributes);
+                    dojo.byId("spanDirectionHeader").innerHTML = "Directions to " + dojo.string.substitute(parkName, attributes);
                     dojo.byId("spanParkInfo").innerHTML = dojo.string.substitute(parkName, attributes);
                     dojo.byId("imgList").style.display = "block";
-                    dojo.byId("imgDirections").style.display = "block";
+
+                    if (getDirectionsMobile) {
+                        if (getDirections) {
+                            dojo.byId("imgDirections").style.display = "block";
+                        }
+                    }
                     if (!mapPoint) {
                         NewAddressSearch();
                     }
@@ -1267,21 +1219,18 @@ function DisplayInfoWindow(selectedPark, attributes, parkSearched) {
 
             });
             var content;
-            if ((dojo.string.substitute(infoWindowContent[0].FieldName, attributes)) && (dojo.string.substitute(infoWindowContent[0].FieldName, attributes) != "-")) {
+            if ((dojo.string.substitute(infoWindowContent[0].FieldName, attributes)) && (dojo.string.substitute(infoWindowContent[0].FieldName, attributes) !== "-")) {
                 if (dojo.string.substitute(infoWindowContent[0].FieldName, attributes).trimString) {
                     content = dojo.string.substitute(infoWindowContent[0].FieldName, attributes).trimString(15);
-                }
-                else {
+                } else {
                     content = dojo.string.substitute(infoWindowContent[0].FieldName, attributes);
                 }
-            }
-            else {
+            } else {
                 content = showNullValueAs;
             }
             map.infoWindow.setContent(content);
-        }
-        else {
-            dojo.byId('divInfoContent').style.display = "block";
+        } else {
+            dojo.byId("divInfoContent").style.display = "block";
             dojo.byId("tdInfoHeader").innerHTML = "Park Info";
             dojo.byId("imgDetails").style.display = "none";
             ShowInfoDetailsView();
@@ -1290,11 +1239,11 @@ function DisplayInfoWindow(selectedPark, attributes, parkSearched) {
     }, 300);
 }
 
-//function to show park information container
+//Show park information container
 function ShowParksDetailContainer() {
-    dojo.byId('divInfoContainer').style.display = "block";
+    dojo.byId("divInfoContainer").style.display = "block";
     dojo.byId("divInfoDetails").style.display = "block";
-    dojo.byId('divInfoComments').style.display = "none";
+    dojo.byId("divInfoComments").style.display = "none";
     dojo.byId("divInfoDirections").style.display = "none";
     dojo.byId("imgMblPrevImg").style.display = "none";
     dojo.byId("imgMblNextImg").style.display = "none";
@@ -1302,40 +1251,38 @@ function ShowParksDetailContainer() {
     dojo.byId("imgComments").style.display = "block";
     dojo.byId("divInfoPhotoGalleryContainer").style.display = "none";
 
-    dojo.replaceClass("divInfoContent", "showContainer", "hideContainer"); ;
+    dojo.replaceClass("divInfoContent", "showContainer", "hideContainer");
     SetHeightViewDetails();
-    dojo.byId('tdInfoHeader').innerHTML = "Park Info";
+    dojo.byId("tdInfoHeader").innerHTML = "Park Info";
 }
 
-//function to show add comments view
+//Show add-comments view
 function ShowAddCommentsView() {
-    dojo.byId('divAddComment').style.display = "block";
-    dojo.byId('divCommentsView').style.display = "none";
-    dojo.byId('divCommentsList').style.display = "none";
+    dojo.byId("divAddComment").style.display = "block";
+    dojo.byId("divCommentsView").style.display = "none";
+    dojo.byId("divCommentsList").style.display = "none";
     SetHeightCmtControls();
     setTimeout(function () {
-        dojo.byId('txtComments').focus();
+        dojo.byId("txtComments").focus();
     }, 50);
 }
 
-//function to show comments controls with scrollbar
 function SetHeightCmtControls() {
-    var height = (isMobileDevice) ? (dojo.window.getBox().h - 20) : dojo.coords(dojo.byId('divInfoContent')).h;
+    var height = (isMobileDevice) ? (dojo.window.getBox().h - 20) : dojo.coords(dojo.byId("divInfoContent")).h;
     dojo.byId("divCmtIpContainer").style.height = (height - ((isTablet) ? 60 : 50)) + "px";
-    dojo.byId('divCmtIpContent').style.height = (height - ((isTablet) ? 60 : 50)) + "px";
+    dojo.byId("divCmtIpContent").style.height = (height - ((isTablet) ? 60 : 50)) + "px";
     CreateScrollbar(dojo.byId("divCmtIpContainer"), dojo.byId("divCmtIpContent"));
 }
 
-//Function triggered when user adds a new comment
+//Adds a new comment
 function AddComment() {
-    if (dojo.byId('txtComments').value.trim().length == 0) {
-        dojo.byId('txtComments').focus();
-        ShowSpanErrorMessage('commentError', messages.getElementsByTagName("enterComment")[0].childNodes[0].nodeValue);
+    if (dojo.byId("txtComments").value.trim().length === 0) {
+        dojo.byId("txtComments").focus();
+        ShowSpanErrorMessage("commentError", messages.getElementsByTagName("enterComment")[0].childNodes[0].nodeValue);
         return;
-    }
-    else if (dojo.byId('txtComments').value.length > 250) {
-        dojo.byId('txtComments').focus();
-        ShowSpanErrorMessage('commentError', messages.getElementsByTagName("commentsLength")[0].childNodes[0].nodeValue);
+    } else if (dojo.byId("txtComments").value.length > 250) {
+        dojo.byId("txtComments").focus();
+        ShowSpanErrorMessage("commentError", messages.getElementsByTagName("commentsLength")[0].childNodes[0].nodeValue);
         return;
     }
 
@@ -1344,17 +1291,15 @@ function AddComment() {
     var referenceDate = new Date(1970, 0, 1);
     var date = new js.date();
     var attr = {
-        "facilityid": selectedParkID,
-        "rank": Number(dojo.byId('commentRating').value),
-        "comments": dojo.byId('txtComments').value.trim(),
-        "submitdt": date.utcMsFromTimestamp(date.localToUtc(date.localTimestampNow()))
+        "FACILITYID": selectedParkID,
+        "RANK": Number(dojo.byId("commentRating").value),
+        "COMMENTS": dojo.byId("txtComments").value.trim(),
+        "SUBMITDT": date.utcMsFromTimestamp(date.localToUtc(date.localTimestampNow()))
     };
     commentGraphic.setAttributes(attr);
     map.getLayer(parkCommentsLayerId).applyEdits([commentGraphic], null, null, function (msg) {
-        if (msg[0].error) {
-        }
-        else {
-            var table = dojo.query('table', dojo.byId("divCommentsContent"));
+        if (!msg[0].error) {
+            var table = dojo.query("table", dojo.byId("divCommentsContent"));
             if (table.length > 0) {
                 var x = dojo.query("tr[noComments = 'true']", table[0]);
                 if (x.length > 0) {
@@ -1370,29 +1315,30 @@ function AddComment() {
                 var controlId = "info_" + index;
                 commentsCell.appendChild(CreateCommentRecord(attr, controlId));
                 tr.appendChild(commentsCell);
-                CreateRatingWidget(dojo.byId('commentRating' + controlId));
-                SetRating(dojo.byId('commentRating' + controlId), attr.rank);
+                CreateRatingWidget(dojo.byId("commentRating" + controlId));
+                SetRating(dojo.byId("commentRating" + controlId), attr.RANK);
                 if (defaultPark) {
-                    if (defaultPark.facilityID == selectedParkID) {
-                        var commentsTable = dojo.query('table', dojo.byId("divCommentHolder"));
+                    if (defaultPark.facilityID === selectedParkID) {
+                        var commentsTable = dojo.query("table", dojo.byId("divCommentHolder"));
                         if (commentsTable.length > 0) {
                             var noComments = dojo.query("tr[noComments = 'true']", commentsTable[0]);
                             if (noComments.length > 0) {
                                 RemoveChildren(commentsTable[0]);
                             }
-
+                            dojo.byId("divComments").style.display = "block";
+                            ResetSlideControls();
                             var tr = commentsTable[0].insertRow(0);
                             var commentsCell = document.createElement("td");
                             commentsCell.className = "bottomborder";
-                            var index = dojo.query("tr", dojo.byId('tblComment')).length;
+                            var index = dojo.query("tr", dojo.byId("tblComment")).length;
                             if (index) {
                                 index = 0;
                             }
                             var controlId = index;
                             commentsCell.appendChild(CreateCommentRecord(attr, controlId));
                             tr.appendChild(commentsCell);
-                            CreateRatingWidget(dojo.byId('commentRating' + controlId));
-                            SetRating(dojo.byId('commentRating' + controlId), attr.rank);
+                            CreateRatingWidget(dojo.byId("commentRating" + controlId));
+                            SetRating(dojo.byId("commentRating" + controlId), attr.RANK);
                         }
                     }
                 }
@@ -1408,28 +1354,27 @@ function AddComment() {
 
 function HideSearchResultContainer() {
     setTimeout(function () {
-        dojo.byId('divResults').style.display = "none";
+        dojo.byId("divResults").style.display = "none";
         dojo.replaceClass("divResultContent", "hideContainer", "showContainer");
     }, 500);
 }
 
-//function to show Info request details view
+//Show Info details view
 function ShowInfoDetailsView() {
-    dojo.byId('divInfoComments').style.display = "none";
-    dojo.byId('divInfoDetails').style.display = "block";
-    dojo.byId('divInfoDirections').style.display = "none";
+    dojo.byId("divInfoComments").style.display = "none";
+    dojo.byId("divInfoDetails").style.display = "block";
+    dojo.byId("divInfoDirections").style.display = "none";
     dojo.byId("imgComments").style.display = "block";
     dojo.byId("imgDetails").style.display = "none";
-    dojo.byId('tdImgGAllery').style.display = "none";
-    dojo.byId('tdInfoHeader').style.display = "block";
-    dojo.byId('tdInfoHeader').innerHTML = "Park Info";
+    dojo.byId("tdImgGAllery").style.display = "none";
+    dojo.byId("tdInfoHeader").style.display = "block";
+    dojo.byId("tdInfoHeader").innerHTML = "Park Info";
     dojo.byId("tdClose").style.display = "block";
     dojo.byId("divInfoPhotoGalleryContainer").style.display = "none";
     if (isMobileDevice) {
         if (!getDirections) {
             dojo.byId("imgDirections").style.display = "none";
-        }
-        else {
+        } else {
             if (!isParkSearched) {
                 dojo.byId("imgDirections").style.display = "none";
                 if (map.getLayer(tempBufferLayer).graphics.length > 0) {
@@ -1438,14 +1383,16 @@ function ShowInfoDetailsView() {
                 if (map.getLayer(tempBufferLayer).graphics.length > 0) {
                     if (!map.getLayer(tempBufferLayer).graphics[0].geometry.contains(selectedPark)) {
                         dojo.byId("imgDirections").style.display = "none";
-                    }
-                    else {
-                        dojo.byId("imgDirections").style.display = "block";
+                    } else {
+                        if (getDirectionsMobile) {
+                            dojo.byId("imgDirections").style.display = "block";
+                        }
                     }
                 }
-            }
-            else {
-                dojo.byId("imgDirections").style.display = "block";
+            } else {
+                if (getDirectionsMobile) {
+                    dojo.byId("imgDirections").style.display = "block";
+                }
                 dojo.byId("imgList").style.display = "block";
             }
         }
@@ -1454,18 +1401,18 @@ function ShowInfoDetailsView() {
 }
 
 function ShowPhotoGalleryView() {
-    dojo.byId('divInfoComments').style.display = "none";
-    dojo.byId('divInfoDetails').style.display = "none";
-    dojo.byId('divInfoDirections').style.display = "none";
+    dojo.byId("divInfoComments").style.display = "none";
+    dojo.byId("divInfoDetails").style.display = "none";
+    dojo.byId("divInfoDirections").style.display = "none";
     dojo.byId("divInfoPhotoGalleryContainer").style.display = "block";
     dojo.byId("divPhoto").style.display = "block";
     dojo.byId("divMblImage").style.display = "none";
     dojo.byId("imgComments").style.display = "none";
     dojo.byId("imgDetails").style.display = "none";
-    dojo.byId('imgDirections').style.display = "none";
+    dojo.byId("imgDirections").style.display = "none";
     dojo.byId("imgList").style.display = "none";
-    dojo.byId('tdInfoHeader').style.display = "none";
-    dojo.byId('tdImgGAllery').style.display = "block";
+    dojo.byId("tdInfoHeader").style.display = "none";
+    dojo.byId("tdImgGAllery").style.display = "block";
     dojo.byId("divCount").style.display = "none";
     dojo.byId("imgMblPrevImg").style.display = "none";
     dojo.byId("imgMblNextImg").style.display = "none";
@@ -1473,39 +1420,39 @@ function ShowPhotoGalleryView() {
     dojo.byId("imgGallery").src = "images/backGallery.png";
     dojo.byId("imgGallery").onclick = function () {
         ShowInfoDetailsView();
-    }
+    };
     SetHeightGalleryDetails();
 }
 
-//function to show comments view
+//Show comments view
 function ShowCommentsView() {
     dojo.byId("imgDetails").style.display = "block";
     dojo.byId("imgComments").style.display = "none";
-    dojo.byId('divInfoComments').style.display = "block";
-    dojo.byId('divInfoDetails').style.display = "none";
-    dojo.byId('divInfoDirections').style.display = "none";
+    dojo.byId("divInfoComments").style.display = "block";
+    dojo.byId("divInfoDetails").style.display = "none";
+    dojo.byId("divInfoDirections").style.display = "none";
     dojo.byId("divInfoPhotoGalleryContainer").style.display = "none";
-    dojo.byId('tdInfoHeader').innerHTML = "Comments";
+    dojo.byId("tdInfoHeader").innerHTML = "Comments";
     if (isMobileDevice) {
         if (!getDirections) {
             dojo.byId("imgDirections").style.display = "none";
-        }
-        else {
+        } else {
             if (!isParkSearched) {
                 dojo.byId("imgDirections").style.display = "none";
 
                 if (map.getLayer(tempBufferLayer).graphics.length > 0) {
                     if (!map.getLayer(tempBufferLayer).graphics[0].geometry.contains(selectedPark)) {
                         dojo.byId("imgDirections").style.display = "none";
-                    }
-
-                    else {
-                        dojo.byId("imgDirections").style.display = "block";
+                    } else {
+                        if (getDirectionsMobile) {
+                            dojo.byId("imgDirections").style.display = "block";
+                        }
                     }
                 }
-            }
-            else {
-                dojo.byId("imgDirections").style.display = "block";
+            } else {
+                if (getDirectionsMobile) {
+                    dojo.byId("imgDirections").style.display = "block";
+                }
             }
         }
     }
@@ -1516,35 +1463,33 @@ function ShowCommentsView() {
     SetHeightCmtControls();
 }
 
-//function to show Info request directions view
+//Show Info request directions view
 function ShowInfoDirectionsView() {
     if (isMobileDevice) {
-        dojo.byId('divInfoComments').style.display = "none";
-        dojo.byId('divInfoDetails').style.display = "none";
-        dojo.byId('divInfoDirections').style.display = "block";
+        dojo.byId("divInfoComments").style.display = "none";
+        dojo.byId("divInfoDetails").style.display = "none";
+        dojo.byId("divInfoDirections").style.display = "block";
         dojo.byId("imgDirections").style.display = "none";
         dojo.byId("imgDetails").style.display = "block";
         dojo.byId("imgComments").style.display = "block";
         dojo.byId("tdInfoHeader").innerHTML = "Directions";
         SetHeightViewDirections();
-    }
-    else {
-        dojo.byId('imgDirections').style.display = "none";
+    } else {
+        dojo.byId("imgDirections").style.display = "none";
         dojo.byId("imgComments").style.display = "block";
-        dojo.byId('divInfoComments').style.display = "none";
-        dojo.byId('divInfoDetails').style.display = "block";
-        dojo.byId('divInfoDirections').style.display = "none";
+        dojo.byId("divInfoComments").style.display = "none";
+        dojo.byId("divInfoDetails").style.display = "block";
+        dojo.byId("divInfoDirections").style.display = "none";
         SetHeightViewDetails();
     }
 }
 
-//function to show large images on click
+//Expand image
 function ShowImages(img) {
     var images;
     if (fromInfoWindow) {
         images = imgFiles;
-    }
-    else {
+    } else {
         images = imgArray;
     }
     index = img.getAttribute("index");
@@ -1553,27 +1498,24 @@ function ShowImages(img) {
         dojo.replaceClass("divImgsBlock", "opacityShowAnimation", "opacityHideAnimation");
         dojo.replaceClass("divImgs", "showContainer", "hideContainer");
 
-        dojo.byId('imgNextImg').src = "images/arrRight.png";
-        dojo.byId('imgPreviousImg').src = "images/arrLeft.png";
-        if (index == 0 && images.length == 1) {
-            dojo.byId('imgPreviousImg').style.display = 'none';
-            dojo.byId('imgNextImg').style.display = 'none';
-        }
-        else if (index == 0) {
-            dojo.byId('imgPreviousImg').style.display = 'none';
-            dojo.byId('imgNextImg').style.display = 'block';
-        }
-        else if (images.length == Number(index) + 1) {
-            dojo.byId('imgNextImg').style.display = 'none';
-            dojo.byId('imgPreviousImg').style.display = 'block';
-        }
-        else {
-            dojo.byId('imgNextImg').style.display = 'block';
-            dojo.byId('imgPreviousImg').style.display = 'block';
+        dojo.byId("imgNextImg").src = "images/arrRight.png";
+        dojo.byId("imgPreviousImg").src = "images/arrLeft.png";
+        if (index === 0 && images.length === 1) {
+            dojo.byId("imgPreviousImg").style.display = "none";
+            dojo.byId("imgNextImg").style.display = "none";
+        } else if (index === 0) {
+            dojo.byId("imgPreviousImg").style.display = "none";
+            dojo.byId("imgNextImg").style.display = "block";
+        } else if (images.length === Number(index) + 1) {
+            dojo.byId("imgNextImg").style.display = "none";
+            dojo.byId("imgPreviousImg").style.display = "block";
+        } else {
+            dojo.byId("imgNextImg").style.display = "block";
+            dojo.byId("imgPreviousImg").style.display = "block";
         }
         setTimeout(function () {
-            dojo.byId('divImgsBlock').style.display = 'block';
-            dojo.byId('divImgs').style.display = 'block';
+            dojo.byId("divImgsBlock").style.display = "block";
+            dojo.byId("divImgs").style.display = "block";
         }, 500);
         ShowProgressIndicator();
         dojo.byId("imgAttachments").src = images[index];
@@ -1581,8 +1523,7 @@ function ShowImages(img) {
             HideProgressIndicator();
         };
 
-    }
-    else {
+    } else {
         var imgNumber = img.getAttribute("totalImages");
         dojo.byId("divCount").style.display = "block";
         dojo.byId("imgMblPrevImg").style.display = "block";
@@ -1599,12 +1540,12 @@ function ShowImages(img) {
         dojo.byId("imgMblAttachment").onload = function () {
             HideProgressIndicator();
         };
-        dojo.byId('tdInfoHeader').style.display = "none";
-        dojo.byId('tdImgGAllery').style.display = "block";
+        dojo.byId("tdInfoHeader").style.display = "none";
+        dojo.byId("tdImgGAllery").style.display = "block";
         dojo.byId("imgGallery").src = "images/mblGallery.png";
         dojo.byId("imgGallery").onclick = function () {
             ShowPhotoGalleryView();
-        }
+        };
     }
 }
 
@@ -1612,50 +1553,45 @@ function ShowNextImg() {
     var images;
     if (fromInfoWindow) {
         images = imgFiles;
-    }
-    else {
+    } else {
         images = imgArray;
     }
-    if (images.length == Number(index) + 1) {
-        dojo.byId('imgNextImg').style.display = 'none';
+    if (images.length === Number(index) + 1) {
+        dojo.byId("imgNextImg").style.display = "none";
         HideProgressIndicator();
-    }
-    else if (images.length == Number(index) + 2) {
+    } else if (images.length === Number(index) + 2) {
         index++;
         if (isMobileDevice) {
             dojo.byId("imgMblAttachment").src = images[index];
             dojo.byId("imgMblAttachment").onload = function () {
                 HideProgressIndicator();
-            }
+            };
             dojo.byId("divCount").innerHTML = (Number(index) + 1) + "/" + imgFiles.length;
-        }
-        else {
-            dojo.byId('imgNextImg').style.display = 'none';
-            dojo.byId('imgPreviousImg').style.display = 'block';
+        } else {
+            dojo.byId("imgNextImg").style.display = "none";
+            dojo.byId("imgPreviousImg").style.display = "block";
             dojo.byId("imgAttachments").src = images[index];
             ShowProgressIndicator();
             dojo.byId("imgAttachments").onload = function () {
                 HideProgressIndicator();
-            }
+            };
         }
-    }
-    else {
+    } else {
         index++;
         if (isMobileDevice) {
             dojo.byId("imgMblAttachment").src = images[index];
             dojo.byId("imgMblAttachment").onload = function () {
                 HideProgressIndicator();
-            }
+            };
             dojo.byId("divCount").innerHTML = (Number(index) + 1) + "/" + imgFiles.length;
-        }
-        else {
-            dojo.byId('imgNextImg').style.display = 'block';
-            dojo.byId('imgPreviousImg').style.display = 'block';
+        } else {
+            dojo.byId("imgNextImg").style.display = "block";
+            dojo.byId("imgPreviousImg").style.display = "block";
             dojo.byId("imgAttachments").src = images[index];
             ShowProgressIndicator();
             dojo.byId("imgAttachments").onload = function () {
                 HideProgressIndicator();
-            }
+            };
         }
     }
 }
@@ -1664,50 +1600,45 @@ function ShowPreviousImg() {
     var images;
     if (fromInfoWindow) {
         images = imgFiles;
-    }
-    else {
+    } else {
         images = imgArray;
     }
-    if (index == 0) {
-        dojo.byId('imgPreviousImg').style.display = 'none';
+    if (index === 0) {
+        dojo.byId("imgPreviousImg").style.display = "none";
         HideProgressIndicator();
-    }
-    else if (index == 1) {
+    } else if (index === 1) {
         index--;
         if (isMobileDevice) {
             dojo.byId("imgMblAttachment").src = images[index];
             dojo.byId("imgMblAttachment").onload = function () {
                 HideProgressIndicator();
-            }
+            };
             dojo.byId("divCount").innerHTML = (Number(index) + 1) + "/" + imgFiles.length;
-        }
-        else {
-            dojo.byId('imgPreviousImg').style.display = 'none';
-            dojo.byId('imgNextImg').style.display = 'block';
+        } else {
+            dojo.byId("imgPreviousImg").style.display = "none";
+            dojo.byId("imgNextImg").style.display = "block";
             dojo.byId("imgAttachments").src = images[index];
             ShowProgressIndicator();
             dojo.byId("imgAttachments").onload = function () {
                 HideProgressIndicator();
-            }
+            };
         }
-    }
-    else {
+    } else {
         index--;
         if (isMobileDevice) {
             dojo.byId("imgMblAttachment").src = images[index];
             dojo.byId("imgMblAttachment").onload = function () {
                 HideProgressIndicator();
-            }
+            };
             dojo.byId("divCount").innerHTML = (Number(index) + 1) + "/" + imgFiles.length;
-        }
-        else {
-            dojo.byId('imgNextImg').style.display = 'block';
-            dojo.byId('imgPreviousImg').style.display = 'block';
+        } else {
+            dojo.byId("imgNextImg").style.display = "block";
+            dojo.byId("imgPreviousImg").style.display = "block";
             dojo.byId("imgAttachments").src = images[index];
             ShowProgressIndicator();
             dojo.byId("imgAttachments").onload = function () {
                 HideProgressIndicator();
-            }
+            };
         }
     }
 }
@@ -1716,71 +1647,73 @@ function CloseImages() {
     dojo.replaceClass("divImgsBlock", "opacityHideAnimation", "opacityShowAnimation");
     dojo.replaceClass("divImgs", "hideContainer", "showContainer");
     setTimeout(function () {
-        dojo.byId('divImgsBlock').style.display = 'none';
-        dojo.byId('divImgs').style.display = 'none';
+        dojo.byId("divImgsBlock").style.display = "none";
+        dojo.byId("divImgs").style.display = "none";
     }, 500);
 }
 
 function NewAddressSearch() {
     if (!getDirections) {
-        dojo.byId("tdDirectionsPod").style.display = "none";
-    }
-    else {
-        dojo.byId("tdDirectionsPod").style.display = "block";
+        dojo.byId("divDirections").style.display = "none";
+    } else {
+        if (getDirectionsDesktop && isBrowser) {
+            dojo.byId("divDirections").style.display = "block";
+        } else if (getDirectionsMobile && isTablet) {
+            dojo.byId("divDirections").style.display = "block";
+
+        }
         searchAddressViaPod = true;
         dojo.byId("tdPrint").style.display = "none";
         RemoveChildren(dojo.byId("tblPodAddressResults"));
         RemoveScrollBar(dojo.byId("divPodAddressScrollContainer"));
-        dojo.byId('txtPodAddress').value = dojo.byId('txtPodAddress').getAttribute("defaultAddress");
+        dojo.byId("txtPodAddress").value = dojo.byId("txtPodAddress").getAttribute("defaultAddress");
         if (!isMobileDevice) {
             dojo.byId("divDirectionSearchContent").style.display = "block";
             dojo.byId("divDirectionContent").style.display = "none";
-        }
-
-        else {
+        } else {
             dojo.byId("divNewInfoDirectionsScroll").style.display = "block";
             dojo.byId("divInfoDirectionsScroll").style.display = "none";
             dojo.byId("divNewInfoDirectionsScroll").appendChild(dojo.byId("tblNewAddressSearch"));
         }
 
         dojo.byId("txtPodAddress").onkeyup = function () {
-            if (dojo.byId('txtPodAddress').value.trim() != "") {
+            if (dojo.byId("txtPodAddress").value.trim() !== "") {
                 searchAddressViaPod = true;
                 LocateAddress();
             }
-        }
+        };
 
         dojo.byId("imgPodSearchLocate").onclick = function () {
-            if (dojo.byId('txtPodAddress').value.trim() == "") {
+            if (dojo.byId("txtPodAddress").value.trim() === "") {
                 alert(messages.getElementsByTagName("addressToLocate")[0].childNodes[0].nodeValue);
                 return;
             }
             searchAddressViaPod = true;
             LocateAddress();
-        }
+        };
     }
 }
 
-//Function for showing print window
+//Show print window
 function ShowModal() {
     if (dojo.coords("divAppContainer").h > 0) {
         dojo.replaceClass("divAppContainer", "hideContainerHeight", "showContainerHeight");
-        dojo.byId('divAppContainer').style.height = '0px';
+        dojo.byId("divAppContainer").style.height = "0px";
     }
     if (dojo.coords("divLayerContainer").h > 0) {
         dojo.replaceClass("divLayerContainer", "hideContainerHeight", "showContainerHeight");
-        dojo.byId('divLayerContainer').style.height = '0px';
+        dojo.byId("divLayerContainer").style.height = "0px";
     }
     printFlag = true;
     window.open("printMap.htm");
 }
 
-//Function for getting current map extent
+//Get current map extent
 function GetPrintExtent() {
     return map.extent;
 }
 
-//Function for getting current active URL
+//Get current active URL
 function GetLayerUrl() {
     var layers = [];
     for (var j = 0; j < map.layerIds.length; j++) {
@@ -1794,25 +1727,25 @@ function GetLayerUrl() {
     }
 }
 
-//Function for getting current instance of graphics layer
+//Get current instance of graphics layer
 function GetGraphicsLayer() {
     var tempGraphicsLayer = map.getLayer(tempGraphicsLayerId);
     return tempGraphicsLayer;
 }
 
-//Function for getting current instance of parks layer
+//Get current instance of parks layer
 function GetParksLayer() {
     var parksLayer = map.getLayer(devPlanLayerID);
     return parksLayer.url;
 }
 
-//Function for getting current instance of route layer
+//Get current instance of route layer
 function GetRouteLayer() {
     var routeLayer = map.getLayer(routeLayerId);
     return routeLayer;
 }
 
-//function for adding graphic to a layer.
+//Add graphic to a layer.
 function AddGraphic(layer, symbol, point, attr) {
     var graphic = new esri.Graphic(point, symbol, attr, null);
     layer.add(graphic);
@@ -1822,61 +1755,61 @@ function GetDirectionsHeader() {
     return directionsHeaderArray;
 }
 
-//Function for getting current instance of highlighted layer
+//Get current instance of highlighted layer
 function GetHighlightedPollLayer() {
     var highlightedLayer = map.getLayer(highlightPollLayerId);
     return highlightedLayer;
 }
 
-//Function to clear default value
+//Clear default value
 function ClearDefaultText(e) {
     var target = window.event ? window.event.srcElement : e ? e.target : null;
-    if (!target) return;
+    if (!target) {
+        return;
+    }
 
     resultFound = false;
 
-    if (dojo.byId("tdDirectionsPod").style.display == "block") {
-        ResetTagetValueToBlank(target, "defaultAddressPodTitle", "white")
+    if (dojo.byId("divDirections").style.display === "block") {
+        ResetTagetValueToBlank(target, "defaultAddressPodTitle", "white");
     }
 
-    if (dojo.byId("tdSearchPark").className == "tdSearchByPark") {
-        ResetTagetValueToBlank(target, "defaultParkTitle", "white")
-    }
-    else {
-        ResetTagetValueToBlank(target, "defaultAddressTitle", "white")
+    if (dojo.byId("tdSearchPark").className === "tdSearchByPark") {
+        ResetTagetValueToBlank(target, "defaultParkTitle", "white");
+    } else {
+        ResetTagetValueToBlank(target, "defaultAddressTitle", "white");
     }
 }
 
 function ResetTagetValueToBlank(target, title, color) {
-    //  if (target.value == target.getAttribute(title)) {
-    target.value = '';
-    //  }
+    target.value = "";
     target.style.color = color;
 }
 
-//Function to set default value
+//Set default value
 function ReplaceDefaultText(e) {
     var target = window.event ? window.event.srcElement : e ? e.target : null;
-    if (!target) return;
+    if (!target) {
+        return;
+    }
 
-    if (target.id == "txtPodAddress") {
-        if (dojo.byId("divDirectionSearchContent").style.display == "block") {
-            ResetTargetValue(target, "defaultAddress", "gray")
+    if (target.id === "txtPodAddress") {
+        if (dojo.byId("divDirectionSearchContent").style.display === "block") {
+            ResetTargetValue(target, "defaultAddress", "gray");
         }
     }
-    if (dojo.byId("tdSearchPark").className == "tdSearchByPark") {
-        ResetTargetValue(target, "defaultParkName", "gray")
-    }
-    else {
-        ResetTargetValue(target, "defaultAddress", "gray")
+    if (dojo.byId("tdSearchPark").className === "tdSearchByPark") {
+        ResetTargetValue(target, "defaultParkName", "gray");
+    } else {
+        ResetTargetValue(target, "defaultAddress", "gray");
     }
 }
 
 function ResetTargetValue(target, title, color) {
-    if (target.value == '' && target.getAttribute(title)) {
+    if (target.value === "" && target.getAttribute(title)) {
         target.value = target.title;
-        if (target.title == "") {
-            target.value = target.getAttribute(title)
+        if (target.title === "") {
+            target.value = target.getAttribute(title);
             target.style.color = color;
         }
     }

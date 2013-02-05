@@ -14,21 +14,15 @@
  | See the License for the specific language governing permissions and
  | limitations under the License.
  */
-//function for creating the basemap components
+//Create base-map components
 function CreateBaseMapComponent() {
     for (var i = 0; i < baseMapLayers.length; i++) {
-        map.addLayer(CreateBaseMapLayer(baseMapLayers[i].MapURL, baseMapLayers[i].Key, (i == 0) ? true : false));
-        if (i == 0) {
-            dojo.connect(map.getLayer(baseMapLayers[i].Key), "onLoad", function (e) {
-                zoomLevel = e.scales.length - 2;
-            });
-        }
+        map.addLayer(CreateBaseMapLayer(baseMapLayers[i].MapURL, baseMapLayers[i].Key, (i === 0) ? true : false));
     }
 
-    var layerList = dojo.byId('layerList');
+    var layerList = dojo.byId("layerList");
 
     for (var i = 0; i < Math.ceil(baseMapLayers.length / 2); i++) {
-        var previewDataRow = document.createElement("tr");
 
         if (baseMapLayers[(i * 2) + 0]) {
             var layerInfo = baseMapLayers[(i * 2) + 0];
@@ -43,7 +37,7 @@ function CreateBaseMapComponent() {
     dojo.addClass(dojo.byId("imgThumbNail" + baseMapLayers[0].Key), "selectedBaseMap");
 }
 
-//function for creating the elements for toggling the maps
+//Create elements to toggle the maps
 function CreateBaseMapElement(baseMapLayerInfo) {
     var divContainer = document.createElement("div");
     divContainer.className = "baseMapContainerNode";
@@ -65,10 +59,10 @@ function CreateBaseMapElement(baseMapLayerInfo) {
     return divContainer;
 }
 
-//function for changing the layer onclick
+//Toggle Basemap 
 function ChangeBaseMap(spanControl) {
     HideMapLayers();
-    var key = spanControl.getAttribute('layerId');
+    var key = spanControl.getAttribute("layerId");
 
     for (var i = 0; i < baseMapLayers.length; i++) {
         dojo.removeClass(dojo.byId("imgThumbNail" + baseMapLayers[i].Key), "selectedBaseMap");
@@ -77,7 +71,7 @@ function ChangeBaseMap(spanControl) {
             dojo.byId("imgThumbNail" + baseMapLayers[i].Key).style.marginLeft = "0px";
             dojo.byId("spanBaseMapText" + baseMapLayers[i].Key).style.marginTop = "0px";
         }
-        if (baseMapLayers[i].Key == key) {
+        if (baseMapLayers[i].Key === key) {
             dojo.addClass(dojo.byId("imgThumbNail" + baseMapLayers[i].Key), "selectedBaseMap");
             var layer = map.getLayer(baseMapLayers[i].Key);
             layer.show();
@@ -85,13 +79,12 @@ function ChangeBaseMap(spanControl) {
     }
 }
 
-//function for creating the layer on the map
+//Create layer on map
 function CreateBaseMapLayer(layerURL, layerId, isVisible) {
     var layer = new esri.layers.ArcGISTiledMapServiceLayer(layerURL, { id: layerId, visible: isVisible });
     return layer;
 }
 
-//function to hide the layers
 function HideMapLayers() {
     for (var i = 0; i < baseMapLayers.length; i++) {
         var layer = map.getLayer(baseMapLayers[i].Key);
@@ -101,16 +94,16 @@ function HideMapLayers() {
     }
 }
 
-//function to animate basemap switch
+//Animate base map panel with wipe-in and wipe-out animation
 function ShowBaseMaps() {
     if (dojo.coords("divAppContainer").h > 0) {
         dojo.replaceClass("divAppContainer", "hideContainerHeight", "showContainerHeight");
-        dojo.byId('divAppContainer').style.height = '0px';
+        dojo.byId("divAppContainer").style.height = "0px";
     }
     if (!isMobileDevice) {
         if (dojo.coords("divAddressHolder").h > 0) {
             dojo.replaceClass("divAddressHolder", "hideContainerHeight", "showContainerHeight");
-            dojo.byId('divAddressHolder').style.height = '0px';
+            dojo.byId("divAddressHolder").style.height = "0px";
         }
     }
 
@@ -119,7 +112,7 @@ function ShowBaseMaps() {
         dojo.byId("divLayerContainer").style.height = "0px";
     }
     else {
-        dojo.byId('divLayerContainer').style.height = Math.ceil(baseMapLayers.length / 2) * (dojo.coords("divLayerHolder").h) + ((isTablet) ? 10 : 8) + "px";
+        dojo.byId("divLayerContainer").style.height = Math.ceil(baseMapLayers.length / 2) * (dojo.coords("divLayerHolder").h) + ((isTablet) ? 10 : 8) + "px";
         dojo.replaceClass("divLayerContainer", "showContainerHeight", "hideContainerHeight");
     }
 }

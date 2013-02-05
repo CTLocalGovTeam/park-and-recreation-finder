@@ -420,7 +420,7 @@ input[placeholder], [placeholder], *[placeholder]
     border-bottom-left-radius: 5px;
     text-align: center;
     cursor: default;
-    background-color: #3C4824;
+    background-color: #AAAAAA;
 }
 
 .tdSearchByPark
@@ -430,7 +430,7 @@ input[placeholder], [placeholder], *[placeholder]
     height: 25px;
     text-align: center;
     cursor: default;
-    background-color: #3C4824;
+    background-color: #AAAAAA;
 }
 .tdSearchByActivity
 {
@@ -445,7 +445,7 @@ input[placeholder], [placeholder], *[placeholder]
     border-bottom-right-radius: 5px;
     text-align: center;
     cursor: default;
-    background-color: #3C4824;
+    background-color: #AAAAAA;
 }
 
 .tdSearchByUnSelectedActivity
@@ -454,7 +454,7 @@ input[placeholder], [placeholder], *[placeholder]
     margin-right: 10px;
     height: 25px;
     text-align: center;
-    background: rgb(76,76,76); /* Old browsers */
+    background: #3C4824; /* Old browsers */
     -moz-border-top-right-radius: 5px;
     -webkit-border-top-right-radius: 5px;
     border-top-right-radius: 5px;
@@ -470,7 +470,7 @@ input[placeholder], [placeholder], *[placeholder]
     margin-right: 10px;
     height: 25px;
     text-align: center;
-    background: rgb(76,76,76); /* Old browsers */
+    background: #3C4824; /* Old browsers */
     cursor: pointer;
 }
 
@@ -480,7 +480,7 @@ input[placeholder], [placeholder], *[placeholder]
     margin-right: 10px;
     height: 25px;
     text-align: center;
-    background: rgb(76,76,76); /* Old browsers */
+    background: #3C4824; /* Old browsers */
     -moz-border-top-left-radius: 5px;
     -webkit-border-top-left-radius: 5px;
     border-top-left-radius: 5px;
@@ -514,7 +514,7 @@ input[placeholder], [placeholder], *[placeholder]
     cursor: pointer;
 }
 /*---------------------------------------------------------------------------------------------------------*/
-/*Basemap Container Styles*/
+/*Base-map Container Styles*/
 
 .basemapThumbnail
 {
@@ -774,7 +774,7 @@ input[placeholder], [placeholder], *[placeholder]
     word-wrap: break-word;
 }
 /*---------------------------------------------------------------------------------------------------------*/
-/* bottom panel css*/
+/* bottom panel CSS*/
 
 .divCarouselContent
 {

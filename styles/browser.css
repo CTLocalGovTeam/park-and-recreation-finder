@@ -141,7 +141,7 @@ body, html
 }
 
 /*---------------------------------------------------------------------------------------------------------*/
-/*Styles for basemap container*/
+/*Styles for base-map container*/
 
 .divLayerContainer
 {
@@ -164,7 +164,7 @@ body, html
 }
 
 /*---------------------------------------------------------------------------------------------------------*/
-/*Styles for infowindow content*/
+/*Styles for info-window content*/
 .divInfoContainer
 {
     z-index: 999;
@@ -213,7 +213,7 @@ body, html
 }
 
 /*---------------------------------------------------------------------------------------------------------*/
-/* bottom panel css*/
+/* bottom panel CSS*/
 
 .transparentBackground
 {
@@ -242,7 +242,7 @@ body, html
 
 
 /*---------------------------------------------------------------------------------------------------------*/
-/* esri slider style*/
+/* ESRI slider style*/
 .esriSimpleSlider
 {
     top: 90px !important;

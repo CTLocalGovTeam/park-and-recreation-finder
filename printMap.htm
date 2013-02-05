@@ -22,9 +22,10 @@
     <title>Park and Recreation Finder</title>
     <link rel="shortcut icon" href="images/appIcon.ico" />
     <link rel="apple-touch-icon" href="images/appIcon.png" />
-    <link id="stylesheet" href='http://serverapi.arcgisonline.com/jsapi/arcgis/3.1/js/dojo/dojox/mobile/themes/iPhone/iPhone.css'
+      <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.2/js/esri/css/esri.css" />
+    <link id="stylesheet" href='http://serverapi.arcgisonline.com/jsapi/arcgis/3.2/js/dojo/dojox/mobile/themes/iPhone/iPhone.css'
         rel='stylesheet' />
-    <link href="styles/parkAndRecreationFinder.css" rel="stylesheet" type="text/css" />
+    <link href="styles/parksAndRecreationFinder.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript">
 
         djConfig = (function () {
@@ -42,7 +43,7 @@
         })();
 
     </script>
-    <script type="text/javascript" src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=3.1compact">
+    <script type="text/javascript" src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=3.2compact">
     </script>
     <script type="text/javascript" src="js/utils.js"></script>
     <script type="text/javascript">
@@ -70,7 +71,6 @@
             directions = window_opener.drivingDirections;
             directionsHeader = window_opener.GetDirectionsHeader();
             highlightedLayer = window_opener.GetHighlightedPollLayer();
-            //initialExtent = window_opener.GetPrintExtent();
             printmap = new esri.Map("mapPrint", { slider: false });
 
             /*Code for adding basemap layers to print*/
@@ -99,7 +99,7 @@
                 var gLayer = new esri.layers.GraphicsLayer();
                 gLayer.id = tempRouteLayer;
                 printmap.addLayer(gLayer);
-                var symbol
+                var symbol;
                 for (var i = 0; i < routeLayer.graphics.length; i++) {
                     symbol = new esri.symbol.SimpleLineSymbol().setColor(routeLayer.graphics[i].symbol.color).setWidth(routeLayer.graphics[i].symbol.width);
                     var polyLine = new esri.geometry.Polyline(routeLayer.graphics[i].geometry.toJson());

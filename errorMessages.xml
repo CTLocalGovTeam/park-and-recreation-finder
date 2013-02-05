@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
  | Version 10.1.2
  | Copyright 2012 Esri
@@ -18,7 +18,6 @@
 <Messages>
   <addressToLocate>Enter address to Locate.</addressToLocate>
   <parkToLocate>Enter park to Locate.</parkToLocate>
-  <unableToLocate>Unable to locate specified address.</unableToLocate>
   <noParks>No parks found.</noParks>
   <noParksFound>No parks found in the buffer area.</noParksFound>
   <selectActivities>Please select activities to search.</selectActivities>
@@ -32,7 +31,7 @@
   <geolocationPositionUnavailable>Position unavailable.</geolocationPositionUnavailable>
   <geolocationPermissionDenied>Please enable Permissions for current location.</geolocationPermissionDenied>
   <geolocationUnKnownError>Unknown error.</geolocationUnKnownError>
-  <invalidSearch>No results found.</invalidSearch>
+  <invalidSearch>No results found</invalidSearch>
   <numberOfParksFoundNearAddress>Found ${0} park(s) near the address</numberOfParksFoundNearAddress>
   <numberOfParksFoundBySearch>Found ${0} park(s) matching the searched criteria</numberOfParksFoundBySearch>
   <noPhotosAvailable>There are no photos available</noPhotosAvailable>

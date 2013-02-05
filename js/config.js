@@ -39,8 +39,8 @@ dojo.declare("js.Config", null, {
     // 7f. Customize data formatting                  - [ Tag(s) to look for: ShowNullValueAs, FormatDateAs ]
     //
     // 8. Customize buffer settings                   - [ Tag(s) to look for: BufferDistance,BufferColor ]
-    // 9. Customize address search settings           - [ Tag(s) to look for: LocatorURL, LocatorNameFields, LocatorFields, LocatorDefaultAddress,LocatorDefaultPark, LocatorMarkupSymbolPath, AddressMatchScore,LocatorRippleSize ]
-    //
+    // 9. Customize address search settings           - [ Tag(s) to look for: LocatorURL, LocatorNameFields, , LocatorDefaultAddress,LocatorDefaultPark, LocatorMarkupSymbolPath, AddressMatchScore,LocatorRippleSize ]
+    //LocatorFields
     // 10. Set URL for geometry service                - [ Tag(s) to look for: GeometryService ]
     //
     // 11. Customize routing settings for directions  - [ Tag(s) to look for: RouteServiceURL, RouteColor, RouteWidth, RippleColor, GetDirections ]
@@ -71,22 +71,18 @@ dojo.declare("js.Config", null, {
     // BASEMAP SETTINGS
     // ------------------------------------------------------------------------------------------------------------------------
     // Set baseMap layers
-    // Please note: All basemaps need to use the same spatial reference. By default, on application start the first basemap will be loaded
-    BaseMapLayers:
-          [
-                {
-                    Key: "topoMap",
-                    ThumbnailSource: "images/topographic.jpg",
-                    Name: "Topographic Map",
-                    MapURL: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer"
-                },
-				{
-				    Key: "parcelMap",
-				    ThumbnailSource: "images/parcel.png",
-				    Name: "Parcel Map",
-				    MapURL: "http://localgovtemplates.esri.com/ArcGIS/rest/services/ParcelPublicAccess/MapServer"
-				}
-          ],
+    // Please note: All base-maps need to use the same spatial reference. By default, on application start the first base-map will be loaded
+    BaseMapLayers: [{
+        Key: "topoMap",
+        ThumbnailSource: "images/topographic.jpg",
+        Name: "Topographic Map",
+        MapURL: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer"
+    }, {
+        Key: "parcelMap",
+        ThumbnailSource: "images/parcel.png",
+        Name: "Parcel Map",
+        MapURL: "http://localgovtemplates.esri.com/ArcGIS/rest/services/ParcelPublicAccess/MapServer"
+    }],
 
     // Initial map extent. Use comma (,) to separate values and don t delete the last comma
     DefaultExtent: "-9820183.18, 5123332.08, -9807373.74, 5128739.76",
@@ -96,52 +92,44 @@ dojo.declare("js.Config", null, {
     // ------------------------------------------------------------------------------------------------------------------------
 
     // Configure operational layers:
-    //URL used for doing query task on the features.
-    DevPlanLayer: "http://203.199.47.146/arcgis/rest/services/ParksAndRecreation/ParksAndRecreation/FeatureServer/0",
+    //URL used for doing query task on the parks layer
+    DevPlanLayer: "http://arcgis-two-1334003536.us-west-1.elb.amazonaws.com/arcgis/rest/services/Parks/FeatureServer/0",
+    //Set the primary key attribute for parks
+    PrimaryKeyForParks: "${FACILITYID}",
+    
+    //URL used for doing query task on the comments layer
+    ParkCommentsLayer: "http://arcgis-two-1334003536.us-west-1.elb.amazonaws.com/arcgis/rest/services/Parks/FeatureServer/1",
+    //Set the primary key attribute for comments
+    PrimaryKeyForComments: "${FACILITYID}",
 
-    ParkActivitiesLayer: "http://203.199.47.146/arcgis/rest/services/ParksAndRecreation/ParksAndRecreation/FeatureServer/2",
-
-    ParkCommentsLayer: "http://203.199.47.146/arcgis/rest/services/ParksAndRecreation/ParksAndRecreation/FeatureServer/1",
-
-    //Set the facility Id attribute for the parks
-    FacilityId: "${facilityid}",
-
-    //Set the park name attribute for the parks
-    ParkName: "${name}",
+    //Set the name attribute for parks
+    ParkName: "${NAME}",
 
     // ServiceUrl is the REST end point for the reference overlay layer
     // DisplayOnLoad setting is used to show or hide the reference overlay layer. Reference overlay will be shown when it is set to true
-    // isMapService setting determines how the reference overlay will be added if isMapService is set to true
-    //   Reference overlay will be added as tiled service when it is set to true.
-    //   Reference overlay will be added as feature service when it is set to false.
 
     ReferenceOverlayLayer:
 
-          {
-              ServiceUrl: "http://services.arcgis.com/b6gLrKHqgkQb393u/arcgis/rest/services/Trails/FeatureServer/0",
-              DisplayOnLoad: true,
-              isMapService: false
-          },
+    {
+        ServiceUrl: "http://arcgis-two-1334003536.us-west-1.elb.amazonaws.com/arcgis/rest/services/TrailsOnlyDynamic/MapServer",
+        DisplayOnLoad: true
+    },
 
     // ------------------------------------------------------------------------------------------------------------------------
     // INFO-WINDOW SETTINGS
     // ------------------------------------------------------------------------------------------------------------------------
     // Info-window is a small, two line popup that gets displayed on selecting a feature
     // Set Info-window title. Configure this with text/fields
-    InfoWindowHeader: [
-	    {
-	        FieldName: "${name}",
-	        Alias: "Park Name"
-	    }
-	],
+    InfoWindowHeader: [{
+        FieldName: "${NAME}",
+        Alias: "Park Name"
+    }],
 
     // Choose content/fields for the info window
-    InfoWindowContent: [
-	    {
-	        FieldName: "${fulladdr}",
-	        Alias: "Full Address"
-	    }
-	],
+    InfoWindowContent: [{
+        FieldName: "${FULLADDR}",
+        Alias: "Full Address"
+    }],
 
 
     // ------------------------------------------------------------------------------------------------------------------------
@@ -149,186 +137,112 @@ dojo.declare("js.Config", null, {
     // ------------------------------------------------------------------------------------------------------------------------
     // Info-popup is a popup dialog that gets displayed on selecting a feature
     // Set the content to be displayed on the info-Popup. Define labels, field values, field types and field formats
-    InfoPopupFieldsCollection:
-       [
-        {
-            DisplayText: "Address:",
-            FieldName: "${fulladdr}",
-            Alias: "Full Address"
-        },
-		{
-		    DisplayText: "Days Open:",
-		    FieldName: "${operdays}",
-		    Alias: "Operational Days"
-		},
-		{ DisplayText: "Hours of Operation:",
-		    FieldName: "${operhours}",
-		    Alias: "Operational Hours"
-		},
-		{
-		    DisplayText: "Parking Spaces Available:",
-		    FieldName: "${parkurl}",
-		    Alias: "Number of Parking Spaces"
-		}
+    InfoPopupFieldsCollection: [{
+        DisplayText: "Address:",
+        FieldName: "${FULLADDR}",
+        Alias: "Full Address"
+    }, {
+        DisplayText: "Days Open:",
+        FieldName: "${OPERDAYS}",
+        Alias: "Operational Days"
+    }, {
+        DisplayText: "Hours of Operation:",
+        FieldName: "${OPERHOURS}",
+        Alias: "Operational Hours"
+    }, {
+        DisplayText: "Parking Spaces Available:",
+        FieldName: "${PARKURL}",
+        Alias: "Number of Parking Spaces"
+    }
 
-      ],
+    ],
 
-    //Activities that are to be displayed in info window of that particular park.
-    Activities: [
-	             {
-	                 FieldName: "${restroom}",
-	                 Alias: "Restrooms Available",
-	                 Image: "images/restrooms.png"
-	             },
-	             {
-	                 FieldName: "${adacomply}",
-	                 Alias: "ADA Compliant",
-	                 Image: "images/ada compliant.png"
-	             },
-	             {
-	                 FieldName: "${swimming}",
-	                 Alias: "Swimming",
-	                 Image: "images/swimming.png"
-	             },
-	             {
-	                 FieldName: "${hiking}",
-	                 Alias: "Hiking",
-	                 Image: "images/hiking.png"
-	             },
-	             {
-	                 FieldName: "${fishing}",
-	                 Alias: "Fishing",
-	                 Image: "images/fishing.png"
-	             },
-	             {
-	                 FieldName: "${picnic}",
-	                 Alias: "Picnic Shelters",
-	                 Image: "images/picnic.png"
-	             },
-	             {
-	                 FieldName: "${boating}",
-	                 Alias: "Boating",
-	                 Image: "images/boating.png"
-	             },
-	             {
-	                 FieldName: "${roadcycle}",
-	                 Alias: "Road Cycling",
-	                 Image: "images/cycling.png"
-	             },
-	             {
-	                 FieldName: "${mtbcycle}",
-	                 Alias: "Mountain Biking",
-	                 Image: "images/mtb.png"
-	             },
-	             {
-	                 FieldName: "${playground}",
-	                 Alias: "Playgrounds",
-	                 Image: "images/playground.png"
-	             },
-	             {
-	                 FieldName: "${ski}",
-	                 Alias: "Skiing",
-	                 Image: "images/skiing.png"
-	             },
-	             {
-	                 FieldName: "${soccer}",
-	                 Alias: "Multi-Purpose Fields",
-	                 Image: "images/soccer.png"
-	             },
-                 {
-                     FieldName: "${camping}",
-                     Alias: "Camping",
-                     Image: "images/camping.png"
-                 },
-                  {
-                      FieldName: "${hunting}",
-                      Alias: "Hunting",
-                      Image: "images/hunting.png"
-                  },
-	             {
-	                 FieldName: "${baseball}",
-	                 Alias: "Baseball Fields",
-	                 Image: "images/baseball.png"
-	             },
-	             {
-	                 FieldName: "${basketball}",
-	                 Alias: "Basketball Courts",
-	                 Image: "images/basketball.png"
-	             }
-	],
+    //Activities to be displayed in info window for a park
+    Activities: [{
+        FieldName: "${RESTROOM}",
+        Alias: "Restrooms Available",
+        Image: "images/restrooms.png",
+        Name: "RESTROOM",
+        isSelected: true
+    }, {
+        FieldName: "${ADACOMPLY}",
+        Alias: "ADA Compliant",
+        Image: "images/ada compliant.png",
+        Name: "ADACOMPLY"
+    }, {
+        FieldName: "${SWIMMING}",
+        Alias: "Swimming",
+        Image: "images/swimming.png",
+        Name: "SWIMMING"
+    }, {
+        FieldName: "${HIKING}",
+        Alias: "Hiking",
+        Image: "images/hiking.png",
+        Name: "HIKING"
+    }, {
+        FieldName: "${FISHING}",
+        Alias: "Fishing",
+        Image: "images/fishing.png",
+        Name: "FISHING"
+    }, {
+        FieldName: "${PICNIC}",
+        Alias: "Picnic Shelters",
+        Image: "images/picnic.png",
+        Name: "PICNIC"
+    }, {
+        FieldName: "${BOATING}",
+        Alias: "Boating",
+        Image: "images/boating.png",
+        Name: "BOATING"
+    }, {
+        FieldName: "${ROADCYCLE}",
+        Alias: "Road Cycling",
+        Image: "images/cycling.png",
+        Name: "ROADCYCLE"
+    }, {
+        FieldName: "${MTBCYCLE}",
+        Alias: "Mountain Biking",
+        Image: "images/mtb.png",
+        Name: "MTBCYCLE"
+    }, {
+        FieldName: "${PLAYGROUND}",
+        Alias: "Playgrounds",
+        Image: "images/playground.png",
+        Name: "PLAYGROUND"
+    }, {
+        FieldName: "${SKI}",
+        Alias: "Skiing",
+        Image: "images/skiing.png",
+        Name: "SKI"
+    }, {
+        FieldName: "${SOCCER}",
+        Alias: "Multi-Purpose Fields",
+        Image: "images/soccer.png",
+        Name: "SOCCER"
+    }, {
+        FieldName: "${CAMPING}",
+        Alias: "Camping",
+        Image: "images/camping.png",
+        Name: "CAMPING"
+    }, {
+        FieldName: "${HUNTING}",
+        Alias: "Hunting",
+        Image: "images/hunting.png",
+        Name: "HUNTING"
+    }, {
+        FieldName: "${BASEBALL}",
+        Alias: "Baseball Fields",
+        Image: "images/baseball.png",
+        Name: "BASEBALL"
+    }, {
+        FieldName: "${BASKETBALL}",
+        Alias: "Basketball Courts",
+        Image: "images/basketball.png",
+        Name: "BASKETBALL"
+    }],
 
-
-    //Activities that are to be displayed in the search pod for the search view.
-    ActivitySearch: {
-        RESTROOM: {
-            Alias: "Restrooms Available",
-            Image: "images/restrooms.png",
-            isSelected: true
-        },
-        ADACOMPLY: {
-            Alias: "ADA Compliant",
-            Image: "images/ada compliant.png"
-        },
-        SWIMMING: {
-            Alias: "Swimming",
-            Image: "images/swimming.png"
-        },
-        HIKING: {
-            Alias: "Hiking",
-            Image: "images/hiking.png"
-        },
-        FISHING: {
-            Alias: "Fishing",
-            Image: "images/fishing.png"
-        },
-        PICNIC: {
-            Alias: "Picnic Shelters",
-            Image: "images/picnic.png"
-        },
-        BOATING: {
-            Alias: "Boating",
-            Image: "images/boating.png"
-        },
-        ROADCYCLE: {
-            Alias: "Road Cycling",
-            Image: "images/cycling.png"
-        },
-        MTBCYCLE: {
-            Alias: "Mountain Biking",
-            Image: "images/mtb.png"
-        },
-        PLAYGROUND: {
-            Alias: "Playgrounds",
-            Image: "images/playground.png"
-        },
-        SKI: {
-            Alias: "Skiing",
-            Image: "images/skiing.png"
-        },
-        SOCCER: {
-            Alias: "Multi-Purpose Fields",
-            Image: "images/soccer.png"
-        },
-        CAMPING: {
-            Alias: "Camping",
-            Image: "images/camping.png"
-        },
-        HUNTING: {
-            Alias: "Hunting",
-            Image: "images/hunting.png"
-        },
-        BASEBALL: {
-            Alias: "Baseball Fields",
-            Image: "images/baseball.png"
-        },
-        BASKETBALL: {
-            Alias: "Basketball Courts",
-            Image: "images/basketball.png"
-        }
-    },
-
-    // Set size of the info-Popup - select maximum height and width in pixels
-    InfoPopupHeight: 270,
+    // Set size of the info-Popup - select maximum height and width in pixels (not applicable for tabbed info-Popup)
+    InfoPopupHeight: 270, 
     InfoPopupWidth: 330,
 
 
@@ -338,52 +252,72 @@ dojo.declare("js.Config", null, {
     // Set date format
     FormatDateAs: "MMM dd, yyyy",
 
-    //Distance in miles for drawing the buffer
+    //set distance in miles for drawing the buffer
     BufferDistance: "1",
 
-    //Buffer color for  search address.
+    //set buffer color for address search
     BufferColor: [0, 100, 0],
-
-    // ------------------------------------------------------------------------------------------------------------------------
-    // ADDRESS SEARCH SETTINGS
-    // ------------------------------------------------------------------------------------------------------------------------
-    // Set Locator service URL
-    LocatorURL: "http://tasks.arcgisonline.com/ArcGIS/rest/services/Locators/TA_Address_NA_10/GeocodeServer",
-
-    //Set locator name fields to search.
-    LocatorNameFields: [{
-        FieldName: 'Loc_name',
-        FieldValues: ["US_RoofTop", "US_StreetName"]
-    }],
-
-    // Set Locator fields (fields to be used for searching)
-    LocatorFields: "SingleLine",
-
-    // Set default address to search
-    LocatorDefaultAddress: "971 sylvan cir Naperville IL 60540",
-
-    // Set default park to search
-    LocatorDefaultPark: "Knoch Park",
-
-    // Set pushpin image path
-    LocatorMarkupSymbolPath: "images/Pushpin.png",
-
-    //Set the minimum match score for address search
-    AddressMatchScore: 80,
 
     //Set the locator ripple size
     LocatorRippleSize: 30,
 
+    //Set this variable to true/false to enable/disable directions for Mobile/tablet 
+    GetDirectionsMobile: false,
+
+    //Set this variable to true/false to enable/disable directions for desktop 
+    GetDirectionsDesktop: true,
+
+    //Set this variable to true/false to enable/disable directions
+    //if this master variable is set to false directions cannot be enabled for any of the devices
+    GetDirections: true,
+
+    // ------------------------------------------------------------------------------------------------------------------------
+    // ADDRESS SEARCH SETTINGS
+    // ------------------------------------------------------------------------------------------------------------------------
+
+    // Set locator settings such as locator symbol, size, display fields, match score
+    LocatorSettings: {
+        DefaultLocatorSymbol: "images/Pushpin.png",
+        MarkupSymbolSize: {
+            width: 35,
+            height: 35
+        },
+        Locators: [{
+            DisplayText: "Location",
+            LocatorDefaultAddress: "971 sylvan cir Naperville IL 60540",
+            LocatorParamaters: ["SingleLine"],
+            LocatorURL: "http://tasks.arcgisonline.com/ArcGIS/rest/services/Locators/TA_Address_NA_10/GeocodeServer",
+            CandidateFields: "Loc_name, Score, Match_addr",
+            DisplayField: "${Match_addr}",
+            AddressMatchScore: 80,
+            LocatorFieldName: "Loc_name",
+            LocatorFieldValues: ["US_Streets", "US_StreetName"]
+        }, {
+            DisplayText: "Name",
+            LocatorDefaultPark: "Knoch Park"
+        }, {
+            DisplayText: "Activity"
+        }]
+    },
+
+    // Set info-pop fields for adding and displaying comment
+    CommentsInfoPopupFieldsCollection: {
+        Rank: "${RANK}",
+        SubmitDate: "${SUBMITDT}",
+        Comments: "${COMMENTS}"
+    },
+
     // ------------------------------------------------------------------------------------------------------------------------
     // GEOMETRY SERVICE SETTINGS
     // ------------------------------------------------------------------------------------------------------------------------
+
     // Set geometry service URL
     GeometryService: "http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer",
 
     // ------------------------------------------------------------------------------------------------------------------------
     // DRIVING DIRECTIONS SETTINGS
     // ------------------------------------------------------------------------------------------------------------------------
-    // Set URL for routing service (network analyst)
+    // Set URL for routing service
     RouteServiceURL: "http://tasks.arcgisonline.com/ArcGIS/rest/services/NetworkAnalysis/ESRI_Route_NA/NAServer/Route",
 
     // Set color for the route symbol
@@ -392,36 +326,30 @@ dojo.declare("js.Config", null, {
     // Set width of the route
     RouteWidth: 6,
 
-    //Ripple color for selected feature.
+    //set ripple color for selected feature
     RippleColor: [60, 72, 36],
-
-    //If set to true the directions will be calculated.
-    GetDirections: true,
 
     // ------------------------------------------------------------------------------------------------------------------------
     // SETTINGS FOR INFO-PODS ON THE BOTTOM PANEL
     // ------------------------------------------------------------------------------------------------------------------------
-    // Set width of the boxes in the bottom panel
+    // Set width of the pods in the bottom panel
     InfoBoxWidth: 422,
 
     // ------------------------------------------------------------------------------------------------------------------------
     // SETTINGS FOR MAP SHARING
     // ------------------------------------------------------------------------------------------------------------------------
     // Set URL for TinyURL service, and URLs for social media
-    MapSharingOptions:
-          {
-              TinyURLServiceURL: "http://api.bit.ly/v3/shorten?login=esri&apiKey=R_65fd9891cd882e2a96b99d4bda1be00e&uri=${0}&format=json",
-              TinyURLResponseAttribute: "data.url",
+    MapSharingOptions: {
+        TinyURLServiceURL: "http://api.bit.ly/v3/shorten?login=esri&apiKey=R_65fd9891cd882e2a96b99d4bda1be00e&uri=${0}&format=json",
+        TinyURLResponseAttribute: "data.url",
 
-              FacebookShareURL: "http://www.facebook.com/sharer.php?u=${0}&t=Parks%20and%20Recreation%20Finder",
-              TwitterShareURL: "http://twitter.com/home/?status=Parks%20and%20Recreation%20Finder ${0}",
-              ShareByMailLink: "mailto:%20?subject=Checkout%20this%20map!&body=${0}"
-          },
+        FacebookShareURL: "http://www.facebook.com/sharer.php?u=${0}&t=Parks%20and%20Recreation%20Finder",
+        TwitterShareURL: "http://twitter.com/home/?status=Parks%20and%20Recreation%20Finder ${0}",
+        ShareByMailLink: "mailto:%20?subject=Checkout%20this%20map!&body=${0}"
+    },
     // ------------------------------------------------------------------------------------------------------------------------
     // SETTINGS FOR INFOPODS
     // ------------------------------------------------------------------------------------------------------------------------
-    // Set sequence for infopods in the bottom panel
+    // Set sequence for info pods in the bottom panel
     Order: ["search", "park", "directions", "photogallery", "comments"]
-
-
 });

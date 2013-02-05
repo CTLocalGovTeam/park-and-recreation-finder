@@ -22,29 +22,25 @@
     <title>Park and Recreation Finder</title>
     <link rel="shortcut icon" href="images/appIcon.ico" />
     <link rel="apple-touch-icon" href="images/appIcon.png" />
-    <link id="stylesheet" href='http://serverapi.arcgisonline.com/jsapi/arcgis/3.1/js/dojo/dojox/mobile/themes/iPhone/iPhone.css'
+       <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.2/js/esri/css/esri.css" />
+    <link id="stylesheet" href='http://serverapi.arcgisonline.com/jsapi/arcgis/3.2/js/dojo/dojox/mobile/themes/iPhone/iPhone.css'
         rel='stylesheet' />
     <link href="styles/parksAndRecreationFinder.css" rel="stylesheet" type="text/css" />
     <link rel="Stylesheet" id="dynamicStyleSheet" />
     <link rel="apple-touch-icon" href="images/appIcon.png" />
     <script type="text/javascript">
 
-        djConfig = (function () {
-            var base = location.href.split("/");
-            base.pop();
-            base = base.join("/");
-            return {
-                async: false,
-                mblHideAddressBar: false,
-                packages: [{
-                    name: "js",
-                    location: base + "/js"
-                }]
-            };
-        })();
+     var dojoConfig = {
+            async: false,
+            parseOnLoad: true,
+            mblHideAddressBar: false,
+            packages:[
+                {name:"js",location:location.pathname.replace(/\/[^/]+$/, '') + '/js'}
+            ]
+        };
 
     </script>
-    <script type="text/javascript" src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=3.1compact">
+    <script type="text/javascript" src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=3.2compact">
     </script>
     <script src="js/baseMapGallery.js" type="text/javascript"></script>
     <script src="js/modernizr-2.5.3.js" type="text/javascript"></script>
@@ -145,7 +141,7 @@
                             <table class="tblHeader" style="width: 100%;">
                                 <tr style="height: 30px;" align="center" valign="top">
                                     <td class="tdHeader" align="left" valign="middle" style="padding-left: 8px;">
-                                        Find a Park
+                                        Search
                                     </td>
                                     <td style="width: 10%;" align="right">
                                         <img src="images/close.png" class="imgOptions" title="Close" style="cursor: pointer;
@@ -160,13 +156,10 @@
                                             <table style="width: 100%; margin: 5px 5px 5px -2px;">
                                                 <tr>
                                                     <td id="tdSearchAddress" class="tdSearchByAddress" onclick="ShowAddressSearchView();">
-                                                        Location
                                                     </td>
                                                     <td id="tdSearchPark" class="tdSearchByUnSelectedPark" onclick="ShowParkSearchView();">
-                                                        Name
                                                     </td>
                                                     <td id="tdSearchActivity" class="tdSearchByUnSelectedActivity" onclick="ShowActivitySearchView();">
-                                                        Activity
                                                     </td>
                                                     <td id="tdImglocate">
                                                         <img id="imgLocate" src="images/locate.png" class="imgLocate" title="Locate" />
@@ -202,16 +195,6 @@
                                                     overflow: hidden;">
                                                     <table id="tableActivityList" align="left" style="width: 97%;" cellspacing="0" cellpadding="0">
                                                     </table>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td id="tdActivitySearchList">
-                                            <div id="div3" class="divAddressList">
-                                                <div id="divActivitySearchListContainer" class="divAddressScrollContainer" align="left">
-                                                    <div id="divActivitySearchListContent" class="divAddressScrollContent">
-                                                        <table id="tblActivityResults" cellpadding="0" cellspacing="2" style="width: 100%;">
-                                                        </table>
-                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
@@ -654,7 +637,7 @@
             </div>
         </div>
     </div>
-    <div id="divComments" style="position: relative;" type="comments">
+    <div id="divComments" style= "position: relative;" type= "comments">
         <div id="divCommentsHeader" class="divHeader">
             <table style="width: 100%; height: 100%;" cellspacing="0" cellpadding="0">
                 <tr>

@@ -52,4 +52,4 @@ dojo.declare("js.date", null, {
         return new Date(utcTimestamp.getTime() - (utcTimestamp.getTimezoneOffset() * 60000));
     }
 
-})
+});

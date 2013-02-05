@@ -34,8 +34,8 @@ dojo.declare("js.InfoWindow", [esri.InfoWindowBase], {
         this._imgDetails;
 
         if (!isMobileDevice) {
-            this._content.appendChild(dojo.byId('divInfoContent'));
-            dojo.byId('divInfoContent').style.display = "none";
+            this._content.appendChild(dojo.byId("divInfoContent"));
+            dojo.byId("divInfoContent").style.display = "none";
             dojo.replaceClass("divInfoContent", "showContainer", "hideContainer");
             this._title.style.display = "none";
         }
@@ -70,10 +70,10 @@ dojo.declare("js.InfoWindow", [esri.InfoWindowBase], {
     show: function (location) {
         this._title.style.display = "block";
         if (this._imgDetails)
-            this._imgDetails.style.display = "block";
+        { this._imgDetails.style.display = "block"; }
 
         if (!isMobileDevice) {
-            this._title.style.display = 'none';
+            this._title.style.display = "none";
         }
 
         this.setLocation(location);

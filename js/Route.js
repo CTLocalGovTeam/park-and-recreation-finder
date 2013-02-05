@@ -14,22 +14,31 @@
 | See the License for the specific language governing permissions and
 | limitations under the License.
 */
-//function for configuring the route betwwen two points
+//Configure the route between two points
 function ConfigureRoute(mapPoint, park) {
     if (!getDirections) {
         if (!isMobileDevice) {
-             dojo.byId("tdDirectionsPod").style.display = "none";
-        }
-        else {
+            if (isBrowser && !getDirectionsDesktop) {
+                dojo.byId("divDirections").style.display = "none";
+            }
+            if (isTablet && !getDirectionsMobile) {
+                dojo.byId("divDirections").style.display = "none";
+            }
+        } else {
             dojo.byId("imgDirections").style.display = "none";
         }
-    }
-    else {
+    } else {
         if (!isMobileDevice) {
-            dojo.byId("tdDirectionsPod").style.display = "block";
-        }
-        else {
-            dojo.byId("imgDirections").style.display = "block";
+            if (isBrowser && getDirectionsDesktop) {
+                    dojo.byId("divDirections").style.display = "block";
+            }
+            if (isTablet && getDirectionsMobile) {
+                dojo.byId("divDirections").style.display = "block";
+            }
+        } else {
+            if (getDirectionsMobile) {
+                dojo.byId("imgDirections").style.display = "block";
+            }
         }
         ShowProgressIndicator();
         map.getLayer(routeLayerId).clear();
@@ -45,14 +54,13 @@ function ConfigureRoute(mapPoint, park) {
 
 var drivingDirections = [];
 
-//function for displaying the route between two points
+//Display the route between two points
 function ShowRoute(solveResult) {
     drivingDirections = [];
     RemoveChildren(dojo.byId("divDirection"));
     if (!searchAddressViaPod) {
         dojo.byId("divDirectionContent").style.display = "block";
-    }
-    else {
+    } else {
         HideProgressIndicator();
     }
     if (isMobileDevice) {
@@ -77,55 +85,59 @@ function ShowRoute(solveResult) {
     directionsHeaderArray.push(dojo.byId("tdTotalDistance").innerHTML);
     dojo.byId("tdTotalTime").innerHTML = "Duration: " + FormatTime(directions.totalTime);
     directionsHeaderArray.push(dojo.byId("tdTotalTime").innerHTML);
-    dojo.byId('divDirectionContainer').style.display = 'block';
+    dojo.byId("divDirectionContainer").style.display = "block";
     var tableDir;
     var tBodyDir;
-    if (!dojo.byId('tblDir')) {
-        tableDir = document.createElement('table');
-        tBodyDir = document.createElement('tbody');
-        tableDir.id = 'tblDir';
+    if (!dojo.byId("tblDir")) {
+        tableDir = document.createElement("table");
+        tBodyDir = document.createElement("tbody");
+        tableDir.id = "tblDir";
         tableDir.style.width = "95%";
-        tBodyDir.id = 'tBodyDir';
+        tBodyDir.id = "tBodyDir";
         tableDir.appendChild(tBodyDir);
-    }
-    else {
-        tableDir = dojo.byId('tblDir');
-        tBodyDir = dojo.byId('tBodyDir');
+    } else {
+        tableDir = dojo.byId("tblDir");
+        tBodyDir = dojo.byId("tBodyDir");
     }
 
     dojo.forEach(solveResult.routeResults[0].directions.features, function (feature, i) {
         dojo.byId("divDirectionSearchContent").style.display = "none";
         dojo.byId("divDirectionContent").style.display = "block";
         var miles = FormatDistance(feature.attributes.length, "miles");
-        var trDir = document.createElement('tr');
+        var trDir = document.createElement("tr");
         tBodyDir.appendChild(trDir);
-        var tdDirNum = document.createElement('td');
-        tdDirNum.vAlign = 'top';
+        var tdDirNum = document.createElement("td");
+        tdDirNum.vAlign = "top";
         tdDirNum.innerHTML = (Number(i) + 1) + ". ";
         trDir.appendChild(tdDirNum);
-        var tdDirVal = document.createElement('td');
-        if (i == 0) {
+        var tdDirVal = document.createElement("td");
+        if (i === 0) {
             tdDirVal.innerHTML = feature.attributes.text.replace('Location 1', map.getLayer(tempGraphicsLayerId).graphics[0].attributes.Address);
-            drivingDirections.push({ "text": tdDirVal.innerHTML });
-        }
-        else if (i == (solveResult.routeResults[0].directions.features.length - 1)) {
+            drivingDirections.push({
+                "text": tdDirVal.innerHTML
+            });
+        } else if (i === (solveResult.routeResults[0].directions.features.length - 1)) {
             if (isMobileDevice) {
-                tdDirVal.innerHTML = feature.attributes.text.replace('Location 2', dojo.byId("tdPName").getAttribute("parkName"));
+                tdDirVal.innerHTML = feature.attributes.text.replace("Location 2", dojo.byId("tdPName").getAttribute("parkName"));
+            } else {
+                tdDirVal.innerHTML = feature.attributes.text.replace("Location 2", dojo.byId("spanDirectionHeader").getAttribute("parkName"));
             }
-            else {
-                tdDirVal.innerHTML = feature.attributes.text.replace('Location 2', dojo.byId("spanDirectionHeader").getAttribute("parkName"));
-            }
-            drivingDirections.push({ "text": tdDirVal.innerHTML });
-        }
-        else {
+            drivingDirections.push({
+                "text": tdDirVal.innerHTML
+            });
+        } else {
             if (miles) {
                 var distance = FormatDistance(feature.attributes.length, "miles");
                 tdDirVal.innerHTML = feature.attributes.text + " (" + distance + ")";
-                drivingDirections.push({ "text": feature.attributes.text, "distance": distance });
-            }
-            else {
+                drivingDirections.push({
+                    "text": feature.attributes.text,
+                    "distance": distance
+                });
+            } else {
                 tdDirVal.innerHTML = feature.attributes.text;
-                drivingDirections.push({ "text": tdDirVal.innerHTML });
+                drivingDirections.push({
+                    "text": tdDirVal.innerHTML
+                });
             }
         }
         trDir.appendChild(tdDirVal);
@@ -133,40 +145,31 @@ function ShowRoute(solveResult) {
     dojo.byId("divDirection").appendChild(tableDir);
 
     setTimeout(function () {
-        CreateScrollbar(dojo.byId('divDirectionContainer'), dojo.byId('divDirection'));
+        CreateScrollbar(dojo.byId("divDirectionContainer"), dojo.byId("divDirection"));
     }, 500);
 }
 
-//Display any errors that were caught when attempting to solve the route
+//Display errors caught attempting to solve the route
 function ErrorHandler(err) {
-    mapPoint = '';
+    mapPoint = "";
     NewAddressSearch();
     HideProgressIndicator();
     alert(messages.getElementsByTagName("routeCouldNotBeCalculated")[0].childNodes[0].nodeValue);
-//    if (!isMobileDevice) {
-//        map.setExtent(GetBrowserMapExtent(selectedPark));
-//         }
-//    else {
-//        map.setExtent(GetMobileMapExtent(selectedPark));
-//        selectedGraphic = selectedPark;
-//    }
 }
 
-//Format the time as hours and minutes
+//Format time 
 function FormatTime(time) {
-    var hr = Math.floor(time / 60);  //Important to use math.floor with hours
+    var hr = Math.floor(time / 60); //Important to use math.floor with hours
     var min = Math.round(time % 60);
     if (hr < 1 && min < 1) {
         return "less than a minute";
+    } else if (hr < 1) {
+        return min + " minute(s)";
     }
-    else
-        if (hr < 1) {
-            return min + " minute(s)";
-        }
     return hr + " hour(s) " + min + " minute(s)";
 }
 
-//Round the distance to the nearest hundredth of a unit
+//Round distance to nearest hundredth of a unit
 function FormatDistance(dist, units) {
     var d = Math.round(dist * 100) / 100;
     if (d === 0) {

@@ -21,7 +21,7 @@
 /* 2.  Set styles for icons, buttons and header styles
                                                 - { Style(s) to look for: customButton,tableHeader,tdHeader,imgOptions,imgShare}*/
 /* 3.  Set the styles for search container      - { Style(s) to look for: divAddressContainer,divAddressContent,txtAddress,imgLocate}*/
-/* 4.  Set the styles for esri slider           - { Style(s) to look for: esriSimpleSlider}*/
+/* 4.  Set the styles for ESRI slider           - { Style(s) to look for: esriSimpleSlider}*/
 
 /*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 /* Styles for body*/
@@ -91,13 +91,13 @@ html, body
     height: 44px !important;
     width: 44px !important;
     vertical-align: middle;
-    top: 51px; /*right: 15px;*/
+    top: 51px;
 }
 
 
 .divAddressPlaceHolder
 {
-    height: 44px; /*width: 100%;*/
+    height: 44px;
 }
 .bottomborder
 {
@@ -179,7 +179,7 @@ html, body
 }
 
 /*---------------------------------------------------------------------------------------------------------*/
-/* esri slider style*/
+/* ESRI slider style*/
 .esriSimpleSlider
 {
     left: 5px !important;

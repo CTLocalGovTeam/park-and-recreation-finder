@@ -14,23 +14,23 @@
  | See the License for the specific language governing permissions and
  | limitations under the License.
  */
-var hosizontalPosition = 0; //scrolling position of scrolling container
+var hosizontalPosition = 0; //Scroll position of scrolling container
 var newLeft = 0; //left position of the carousel content
 var touchStart = false; //flag for setting the touch events
 
-//function for creating the carousel
+//Show animation for touch event
 function TouchEvent() {
-    dojo.connect(dojo.byId('divCarouselDataContainer'), "touchstart", function (e) {
+    dojo.connect(dojo.byId("divCarouselDataContainer"), "touchstart", function (e) {
         hosizontalPosition = e.touches[0].pageX;
         touchStart = true;
     });
 
-    dojo.connect(dojo.byId('divCarouselDataContainer'), "touchmove", function (e) {
+    dojo.connect(dojo.byId("divCarouselDataContainer"), "touchmove", function (e) {
         if (touchStart) {
             touchStart = false;
             var touch = e.touches[0];
             e.cancelBubble = true;
-            if (e.stopPropagation) e.stopPropagation();
+            if (e.stopPropagation) { e.stopPropagation(); }
             e.preventDefault();
             if (touch.pageX - hosizontalPosition >= 2) {
                 setTimeout(function () {
@@ -45,24 +45,25 @@ function TouchEvent() {
         }
     });
 
-    dojo.connect(dojo.byId('divCarouselDataContainer'), "touchend", function (e) {
-        hosizontalPosition = 0
+    dojo.connect(dojo.byId("divCarouselDataContainer"), "touchend", function () {
+        hosizontalPosition = 0;
         touchStart = false;
     });
 }
 
+//Show animation for touch event for images
 function TouchImage() {
-    dojo.connect(dojo.byId('divMblImage'), "touchstart", function (e) {
+    dojo.connect(dojo.byId("divMblImage"), "touchstart", function (e) {
         hosizontalPosition = e.touches[0].pageX;
         touchStart = true;
     });
 
-    dojo.connect(dojo.byId('divMblImage'), "touchmove", function (e) {
+    dojo.connect(dojo.byId("divMblImage"), "touchmove", function (e) {
         if (touchStart) {
             touchStart = false;
             var touch = e.touches[0];
             e.cancelBubble = true;
-            if (e.stopPropagation) e.stopPropagation();
+            if (e.stopPropagation) { e.stopPropagation(); }
             e.preventDefault();
             if (touch.pageX - hosizontalPosition >= 2) {
                 ShowProgressIndicator();
@@ -79,20 +80,19 @@ function TouchImage() {
         }
     });
 
-    dojo.connect(dojo.byId('divMblImage'), "touchend", function (e) {
-        hosizontalPosition = 0
+    dojo.connect(dojo.byId("divMblImage"), "touchend", function () {
+        hosizontalPosition = 0;
         touchStart = false;
     });
 
 }
 
-//function to display the result panel
+//Display and hide bottom panel
 function ShowHideResult(imgToggle) {
-   // debugger;
-    if (dojo.byId("imgToggleResults").getAttribute("disable") == "true" || dojo.byId("imgToggleResults").getAttribute("disable") == true) {
+    if (dojo.byId("imgToggleResults").getAttribute("disable") === "true" || dojo.byId("imgToggleResults").getAttribute("disable") === true) {
         return;
     }
-    if (imgToggle.getAttribute("state") == "minimized") {
+    if (imgToggle.getAttribute("state") === "minimized") {
         WipeInResults();   // maximize
     }
     else {
@@ -100,35 +100,35 @@ function ShowHideResult(imgToggle) {
     }
 }
 
-//function for wiping in bottom panel
+//Show bottom panel with wipe-in animation
 function WipeInResults() {
-    dojo.byId('divImageBackground').style.display = "block";
-    dojo.byId('imgToggleResults').setAttribute("state", "maximized");
-    dojo.byId('imgToggleResults').title = "Hide Panel";
+    dojo.byId("divImageBackground").style.display = "block";
+    dojo.byId("imgToggleResults").setAttribute("state", "maximized");
+    dojo.byId("imgToggleResults").title = "Hide Panel";
     dojo.byId("imgesriLogo").style.bottom = "220px";
-    dojo.byId('divToggle').style.bottom = "220px";
-    dojo.byId('divCarouselContent').style.height = "220px";
+    dojo.byId("divToggle").style.bottom = "220px";
+    dojo.byId("divCarouselContent").style.height = "220px";
     dojo.replaceClass("divCarouselContent", "hideBottomContainer", "showBottomContainer");
-    dojo.byId('imgToggleResults').src = "images/down.png";
+    dojo.byId("imgToggleResults").src = "images/down.png";
 }
 
-//function for wiping out bottom panel
+//Hide bottom panel with wipe-out animation
 function WipeOutResults() {
-    dojo.byId('imgToggleResults').setAttribute("state", "minimized");
-    dojo.byId('imgToggleResults').title = "Show Panel";
+    dojo.byId("imgToggleResults").setAttribute("state", "minimized");
+    dojo.byId("imgToggleResults").title = "Show Panel";
     dojo.byId("imgesriLogo").style.bottom = "0px";
-    dojo.byId('divToggle').style.bottom = "0px";
-    dojo.byId('divCarouselContent').style.height = "0px";
+    dojo.byId("divToggle").style.bottom = "0px";
+    dojo.byId("divCarouselContent").style.height = "0px";
     dojo.replaceClass("divCarouselContent", "showBottomContainer", "hideBottomContainer");
-    dojo.byId('imgToggleResults').src = "images/up.png";
+    dojo.byId("imgToggleResults").src = "images/up.png";
 }
 
-//function for sliding the carousel pods to the right
+//Slide carousel pods to right
 function SlideRight() {
     difference = dojo.byId("divCarouselDataContainer").offsetWidth - dojo.byId("divCarouselDataContent").offsetWidth;
     if (newLeft > difference) {
-        dojo.byId('divLeftArrow').style.display = "block";
-        dojo.byId('divLeftArrow').style.cursor = "pointer";
+        dojo.byId("divLeftArrow").style.display = "block";
+        dojo.byId("divLeftArrow").style.cursor = "pointer";
         newLeft = newLeft - (infoBoxWidth + 5);
         dojo.byId("divCarouselDataContent").style.left = newLeft + "px";
         dojo.addClass("divCarouselDataContent", "slidePanel");
@@ -136,7 +136,7 @@ function SlideRight() {
     }
 }
 
-//function for sliding the carousel pods to the left
+//Slide carousel pods to left
 function SlideLeft() {
     if (newLeft < 0) {
         if (newLeft > -(infoBoxWidth + 5)) {
@@ -155,65 +155,66 @@ function SlideLeft() {
     }
 }
 
-//function for resetting the slide controls
+//Reset slide controls
 function ResetSlideControls() {
     if (newLeft > dojo.byId("divCarouselDataContainer").offsetWidth - dojo.byId("divCarouselDataContent").offsetWidth) {
-        dojo.byId('divRightArrow').style.display = "block";
-        dojo.byId('divRightArrow').style.cursor = "pointer";
+        dojo.byId("divRightArrow").style.display = "block";
+        dojo.byId("divRightArrow").style.cursor = "pointer";
     }
     else {
-        dojo.byId('divRightArrow').style.display = "none";
-        dojo.byId('divRightArrow').style.cursor = "default";
+        dojo.byId("divRightArrow").style.display = "none";
+        dojo.byId("divRightArrow").style.cursor = "default";
     }
 
-    if (newLeft == 0) {
-        dojo.byId('divLeftArrow').style.display = "none";
-        dojo.byId('divLeftArrow').style.cursor = "defalut";
+    if (newLeft === 0) {
+        dojo.byId("divLeftArrow").style.display = "none";
+        dojo.byId("divLeftArrow").style.cursor = "defalut";
     }
     else {
-        dojo.byId('divLeftArrow').style.display = "block";
-        dojo.byId('divLeftArrow').style.cursor = "pointer";
+        dojo.byId("divLeftArrow").style.display = "block";
+        dojo.byId("divLeftArrow").style.cursor = "pointer";
     }
 }
 
+//Reset photo gallery slide controls
 function ResetGallerySlideControls() {
     if ((dojo.byId("divInfoActData")) && (dojo.byId("divInfoScroll"))) {
         if (newInfoLeftOffice > dojo.byId("divInfoActData").offsetWidth - dojo.byId("divInfoScroll").offsetWidth) {
-            dojo.byId('infoRightArrow').style.display = "block";
-            dojo.byId('infoRightArrow').style.cursor = "pointer";
+            dojo.byId("infoRightArrow").style.display = "block";
+            dojo.byId("infoRightArrow").style.cursor = "pointer";
         }
         else {
-            dojo.byId('infoRightArrow').style.display = "none";
-            dojo.byId('infoRightArrow').style.cursor = "default";
+            dojo.byId("infoRightArrow").style.display = "none";
+            dojo.byId("infoRightArrow").style.cursor = "default";
         }
 
-        if (newInfoLeftOffice == 0) {
-            dojo.byId('infoLeftArrow').style.display = "none";
-            dojo.byId('infoLeftArrow').style.cursor = "defalut";
+        if (newInfoLeftOffice === 0) {
+            dojo.byId("infoLeftArrow").style.display = "none";
+            dojo.byId("infoLeftArrow").style.cursor = "defalut";
         }
         else {
-            dojo.byId('infoLeftArrow').style.display = "block";
-            dojo.byId('infoLeftArrow').style.cursor = "pointer";
+            dojo.byId("infoLeftArrow").style.display = "block";
+            dojo.byId("infoLeftArrow").style.cursor = "pointer";
         }
     }
 
     if ((dojo.byId("divGalleryContainer")) && (dojo.byId("divGalleryContent"))) {
         if (newGalleryLeft > dojo.byId("divGalleryContainer").offsetWidth - dojo.byId("divGalleryContent").offsetWidth) {
-            dojo.byId('galRightArrow').style.display = "block";
-            dojo.byId('galRightArrow').style.cursor = "pointer";
+            dojo.byId("galRightArrow").style.display = "block";
+            dojo.byId("galRightArrow").style.cursor = "pointer";
         }
         else {
-            dojo.byId('galRightArrow').style.display = "none";
-            dojo.byId('galRightArrow').style.cursor = "default";
+            dojo.byId("galRightArrow").style.display = "none";
+            dojo.byId("galRightArrow").style.cursor = "default";
         }
 
-        if (newGalleryLeft == 0) {
-            dojo.byId('galLeftArrow').style.display = "none";
-            dojo.byId('galLeftArrow').style.cursor = "defalut";
+        if (newGalleryLeft === 0) {
+            dojo.byId("galLeftArrow").style.display = "none";
+            dojo.byId("galLeftArrow").style.cursor = "defalut";
         }
         else {
-            dojo.byId('galLeftArrow').style.display = "block";
-            dojo.byId('galLeftArrow').style.cursor = "pointer";
+            dojo.byId("galLeftArrow").style.display = "block";
+            dojo.byId("galLeftArrow").style.cursor = "pointer";
         }
     }
 }
