@@ -93,12 +93,12 @@ dojo.declare("js.Config", null, {
 
     // Configure operational layers:
     //URL used for doing query task on the parks layer
-    DevPlanLayer: "http://arcgis-two-1334003536.us-west-1.elb.amazonaws.com/arcgis/rest/services/Parks/FeatureServer/0",
+    DevPlanLayer: "http://arcgis-localgov-61933129.us-west-1.elb.amazonaws.com/arcgis/rest/services/ParkAttach/FeatureServer/2",
     //Set the primary key attribute for parks
     PrimaryKeyForParks: "${FACILITYID}",
-    
+
     //URL used for doing query task on the comments layer
-    ParkCommentsLayer: "http://arcgis-two-1334003536.us-west-1.elb.amazonaws.com/arcgis/rest/services/Parks/FeatureServer/1",
+    ParkCommentsLayer: "http://arcgis-localgov-61933129.us-west-1.elb.amazonaws.com/arcgis/rest/services/ParkAttach/FeatureServer/5",
     //Set the primary key attribute for comments
     PrimaryKeyForComments: "${FACILITYID}",
 
@@ -109,7 +109,6 @@ dojo.declare("js.Config", null, {
     // DisplayOnLoad setting is used to show or hide the reference overlay layer. Reference overlay will be shown when it is set to true
 
     ReferenceOverlayLayer:
-
     {
         ServiceUrl: "http://arcgis-two-1334003536.us-west-1.elb.amazonaws.com/arcgis/rest/services/TrailsOnlyDynamic/MapServer",
         DisplayOnLoad: true
@@ -150,11 +149,10 @@ dojo.declare("js.Config", null, {
         FieldName: "${OPERHOURS}",
         Alias: "Operational Hours"
     }, {
-        DisplayText: "Parking Spaces Available:",
+        DisplayText: "Park Website:",
         FieldName: "${PARKURL}",
-        Alias: "Number of Parking Spaces"
+        Alias: "Website"
     }
-
     ],
 
     //Activities to be displayed in info window for a park
@@ -162,87 +160,71 @@ dojo.declare("js.Config", null, {
         FieldName: "${RESTROOM}",
         Alias: "Restrooms Available",
         Image: "images/restrooms.png",
-        Name: "RESTROOM",
         isSelected: true
     }, {
         FieldName: "${ADACOMPLY}",
         Alias: "ADA Compliant",
-        Image: "images/ada compliant.png",
-        Name: "ADACOMPLY"
+        Image: "images/ada compliant.png"
     }, {
         FieldName: "${SWIMMING}",
         Alias: "Swimming",
-        Image: "images/swimming.png",
-        Name: "SWIMMING"
+        Image: "images/swimming.png"
     }, {
         FieldName: "${HIKING}",
         Alias: "Hiking",
-        Image: "images/hiking.png",
-        Name: "HIKING"
+        Image: "images/hiking.png"
     }, {
         FieldName: "${FISHING}",
         Alias: "Fishing",
-        Image: "images/fishing.png",
-        Name: "FISHING"
+        Image: "images/fishing.png"
     }, {
         FieldName: "${PICNIC}",
         Alias: "Picnic Shelters",
-        Image: "images/picnic.png",
-        Name: "PICNIC"
+        Image: "images/picnic.png"
     }, {
         FieldName: "${BOATING}",
         Alias: "Boating",
-        Image: "images/boating.png",
-        Name: "BOATING"
+        Image: "images/boating.png"
     }, {
         FieldName: "${ROADCYCLE}",
         Alias: "Road Cycling",
-        Image: "images/cycling.png",
-        Name: "ROADCYCLE"
+        Image: "images/cycling.png"
     }, {
         FieldName: "${MTBCYCLE}",
         Alias: "Mountain Biking",
-        Image: "images/mtb.png",
-        Name: "MTBCYCLE"
+        Image: "images/mtb.png"
     }, {
         FieldName: "${PLAYGROUND}",
         Alias: "Playgrounds",
-        Image: "images/playground.png",
-        Name: "PLAYGROUND"
+        Image: "images/playground.png"
     }, {
         FieldName: "${SKI}",
         Alias: "Skiing",
-        Image: "images/skiing.png",
-        Name: "SKI"
+        Image: "images/skiing.png"
     }, {
         FieldName: "${SOCCER}",
         Alias: "Multi-Purpose Fields",
-        Image: "images/soccer.png",
-        Name: "SOCCER"
+        Image: "images/soccer.png"
     }, {
         FieldName: "${CAMPING}",
         Alias: "Camping",
-        Image: "images/camping.png",
-        Name: "CAMPING"
+        Image: "images/camping.png"
     }, {
         FieldName: "${HUNTING}",
         Alias: "Hunting",
-        Image: "images/hunting.png",
-        Name: "HUNTING"
+        Image: "images/hunting.png"
     }, {
         FieldName: "${BASEBALL}",
         Alias: "Baseball Fields",
-        Image: "images/baseball.png",
-        Name: "BASEBALL"
+        Image: "images/baseball.png"
     }, {
         FieldName: "${BASKETBALL}",
         Alias: "Basketball Courts",
-        Image: "images/basketball.png",
-        Name: "BASKETBALL"
+        Image: "images/basketball.png"
     }],
 
     // Set size of the info-Popup - select maximum height and width in pixels (not applicable for tabbed info-Popup)
-    InfoPopupHeight: 270, 
+    InfoPopupHeight: 270,
     InfoPopupWidth: 330,
 
 
@@ -262,7 +244,7 @@ dojo.declare("js.Config", null, {
     LocatorRippleSize: 30,
 
     //Set this variable to true/false to enable/disable directions for Mobile/tablet 
-    GetDirectionsMobile: false,
+    GetDirectionsMobile: true,
 
     //Set this variable to true/false to enable/disable directions for desktop 
     GetDirectionsDesktop: true,
@@ -277,11 +259,12 @@ dojo.declare("js.Config", null, {
 
     // Set locator settings such as locator symbol, size, display fields, match score
     LocatorSettings: {
-        DefaultLocatorSymbol: "images/Pushpin.png",
+        DefaultLocatorSymbol: "images/RedPushpin.png",
         MarkupSymbolSize: {
             width: 35,
             height: 35
         },
+        ZoomLevel: 12,
         Locators: [{
             DisplayText: "Location",
             LocatorDefaultAddress: "971 sylvan cir Naperville IL 60540",
@@ -298,6 +281,16 @@ dojo.declare("js.Config", null, {
         }, {
             DisplayText: "Activity"
         }]
+    },
+
+    // Define the database field names 
+    // Note: DateFieldName refers to a date database field. 
+    // All other attributes refer to text database fields.
+    DatabaseFields: {
+        ParkIdFieldName: "FACILITYID",
+        CommentsFieldName: "COMMENTS",
+        DateFieldName: "SUBMITDT",
+        RankFieldName: "RANK"
     },
 
     // Set info-pop fields for adding and displaying comment

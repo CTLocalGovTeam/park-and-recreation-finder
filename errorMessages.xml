@@ -23,6 +23,7 @@
   <selectActivities>Please select activities to search.</selectActivities>
   <enterComment>Please enter comment.</enterComment>
   <commentsLength>Comment should not exceed 250 characters.</commentsLength>
+  <noComment>No comments available</noComment>
   <noAttachments>No attachments available.</noAttachments>
   <routeCouldNotBeCalculated>Route could not be calculated from current location.</routeCouldNotBeCalculated>
   <tinyURLEngine>Bitly API engine is not working, Please try again after sometime.</tinyURLEngine>

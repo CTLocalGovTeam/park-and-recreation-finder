@@ -30,7 +30,7 @@ function ConfigureRoute(mapPoint, park) {
     } else {
         if (!isMobileDevice) {
             if (isBrowser && getDirectionsDesktop) {
-                    dojo.byId("divDirections").style.display = "block";
+                dojo.byId("divDirections").style.display = "block";
             }
             if (isTablet && getDirectionsMobile) {
                 dojo.byId("divDirections").style.display = "block";
@@ -47,7 +47,13 @@ function ConfigureRoute(mapPoint, park) {
         routeParams.stops.features[1] = new esri.Graphic(park, null);
         //If both the "to" and the "from" addresses are set, solve the route
         if (routeParams.stops.features.length === 2) {
-            routeTask.solve(routeParams);
+            if (getDirections) {
+                routeTask.solve(routeParams);
+            }
+            else {
+                HideProgressIndicator();
+                dojo.byId("imgDirections").style.display = "block";
+            }
         }
     }
 }

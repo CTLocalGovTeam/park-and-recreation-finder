@@ -1,7 +1,7 @@
 ﻿<!doctype html>
 <html lang="en">
 <head>
-    <meta charset=utf-8>
+    <meta charset="utf-8">
     <!--
      | Version 10.1.2
      | Copyright 2012 Esri
@@ -18,11 +18,12 @@
      | See the License for the specific language governing permissions and
      | limitations under the License.
     -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Park and Recreation Finder</title>
     <link rel="shortcut icon" href="images/appIcon.ico" />
     <link rel="apple-touch-icon" href="images/appIcon.png" />
-       <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.2/js/esri/css/esri.css" />
+    <link rel="apple-touch-icon-precomposed" href="images/appIcon.png">
+    <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.2/js/esri/css/esri.css" />
     <link id="stylesheet" href='http://serverapi.arcgisonline.com/jsapi/arcgis/3.2/js/dojo/dojox/mobile/themes/iPhone/iPhone.css'
         rel='stylesheet' />
     <link href="styles/parksAndRecreationFinder.css" rel="stylesheet" type="text/css" />
@@ -256,8 +257,8 @@
                             cellspacing="0">
                             <tr style="height: 30px;" align="center" valign="top">
                                 <td align="left" id="tdImgGAllery" valign="middle" style="padding-left: 7px; display: none;">
-                                    <img class="imageBack" id="imgGallery" title="Back";/>
-                                    <span class="tdInfoHeader">Photo Gallery</span>
+                                    <img class="imageBack" id="imgGallery" title="Back" />
+                                    <span class="tdInfoHeader">Gallery</span>
                                 </td>
                                 <td align="left" id="tdLabel" valign="middle" style="padding-left: 7px;">
                                     <span id="tdInfoHeader" class="tdInfoHeader"></span>
@@ -437,7 +438,7 @@
                         </div>
                         <table cellpadding="0" cellspacing="0" style="width: 100%; height: 100%;">
                             <tr style="height: 100%;">
-                                <td align="left" valign="middle" style="width: 30px;">
+                                <td align="left" valign="middle" id="tdPreviousImg" style="width: 35px;">
                                     <img id="imgPreviousImg" title="Previous Image" class="imgOptions" style="cursor: pointer;
                                         margin-left: 4px; margin-bottom: 25px;" onclick="ShowPreviousImg()" />
                                 </td>
@@ -451,7 +452,7 @@
                                         </tr>
                                     </table>
                                 </td>
-                                <td align="right" valign="middle" style="width: 30px;">
+                                <td align="right" valign="middle" id="tdNextImg" style="width: 35px;">
                                     <img id="imgNextImg" title="Next Image" class="imgOptions" style="cursor: pointer;
                                         margin-right: 5px; margin-bottom: 25px;" onclick="ShowNextImg()" />
                                 </td>
@@ -637,7 +638,7 @@
             </div>
         </div>
     </div>
-    <div id="divComments" style= "position: relative;" type= "comments">
+    <div id="divComments" style="position: relative;" type="comments">
         <div id="divCommentsHeader" class="divHeader">
             <table style="width: 100%; height: 100%;" cellspacing="0" cellpadding="0">
                 <tr>
@@ -661,7 +662,7 @@
             <table style="width: 100%; height: 100%;" cellspacing="0" cellpadding="0">
                 <tr>
                     <td>
-                        <span id="spanPhotoGallery" class="spanHeader">Photo Gallery</span>
+                        <span id="spanPhotoGallery" class="spanHeader" style="font-size: 12px">Photo Gallery</span>
                     </td>
                 </tr>
             </table>

@@ -206,6 +206,11 @@ html, body
     border-radius: 5px;
 }
 
+.imgAttachments
+{    
+    max-width: 380px !important;   
+}
+
 /*---------------------------------------------------------------------------------------------------------*/
 /*styles for bottom panel */
 

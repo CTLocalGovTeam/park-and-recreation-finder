@@ -76,20 +76,20 @@ var locatorRippleSize; //variable to store locator ripple size
 
 var parkName; //variable to store park name object
 var selectedPark; //variable to store selected park
-var isParkSearched = false;//flag set true/false for the park searched 
+var isParkSearched = false; //flag set true/false for the park searched 
 var searchedPark; //variable to store searched park
 
 var searchAddressViaPod = false; //flag set true if the address is searched through pods in the bottom panel
 var loadingIndicatorCounter = 0;
 
-var handlers = [];//Array to hold handlers
+var handlers = []; //Array to hold handlers
 var handlersPod = []; //Array to hold handlers pod
 
 var directionsHeaderArray = []; //Array to hold directions in header
 var getDirections; // master variable for directions
 var resultFound = false;
 var printFlag = false; //flag set true to enable printing
-var loadingAttachmentsImg = "images/imgAttachmentLoader.gif";//variable to store the path of attachment loader image
+var loadingAttachmentsImg = "images/imgAttachmentLoader.gif"; //variable to store the path of attachment loader image
 var loaderImg = "images/loader.gif"; //variable to store the path of loading image
 
 var nameAttribute;
@@ -102,6 +102,8 @@ var primaryKeyForComments; //variable to store  primary key attribute for commen
 var facilityId; //variable to store primary key for park layer
 
 var commentsInfoPopupFieldsCollection; //variable to store fields for adding and displaying comment
+var databaseFields; // Define the database field names 
+
 
 var lastSearchString; //variable for store the last search string
 var stagedSearch; //variable for store the time limit for search
@@ -132,7 +134,7 @@ function Init() {
     }
     dojo.byId("divSplashContent").style.fontSize = fontSize + "px";
 
-    var lastSearchedValue = "";
+
     dojo.connect(dojo.byId("txtAddress"), "onpaste", function () {
         CutAndPasteTimeout();
     });
@@ -141,7 +143,7 @@ function Init() {
         searchAddressViaPod = false;
         setTimeout(function () {
             LocateParkAndAddress();
-        }, 100);   
+        }, 100);
     }
     dojo.connect(dojo.byId("txtAddress"), "oncut", function () {
         CutAndPasteTimeout();
@@ -151,12 +153,10 @@ function Init() {
         if (dojo.byId("tdSearchAddress").className === "tdSearchByAddress") {
             LocateAddress();
         } else if (dojo.byId("tdSearchPark").className === "tdSearchByPark") {
-            if (lastSearchedValue !== dojo.byId("txtAddress").value.trim()) {
-                LocateParkbyName();
-            }
-            lastSearchedValue = dojo.byId("txtAddress").value.trim();
+            LocateParkbyName();
         }
     }
+
     dojo.connect(dojo.byId("txtAddress"), "onkeyup", function (evt) {
         searchAddressViaPod = false;
         if (evt) {
@@ -169,8 +169,16 @@ function Init() {
                 RemoveScrollBar(dojo.byId("divAddressScrollContainer"));
                 return;
             }
+
+            if (evt.keyCode == dojo.keys.ENTER) {
+                if (dojo.byId("txtAddress").value != '') {
+                    LocateParkAndAddress();
+                    return;
+                }
+            }
+
             //validations for auto complete search
-            if ((!((evt.keyCode > 46 && evt.keyCode < 58) || (evt.keyCode > 64 && evt.keyCode < 91) || (evt.keyCode > 95 && evt.keyCode < 106) || evt.keyCode === 8 || evt.keyCode === 110 || evt.keyCode === 188)) || (evt.keyCode === 86 && evt.ctrlKey) || (evt.keyCode === 88 && evt.ctrlKey)) {
+            if ((!((evt.keyCode >= 46 && evt.keyCode < 58) || (evt.keyCode > 64 && evt.keyCode < 91) || (evt.keyCode > 95 && evt.keyCode < 106) || evt.keyCode === 8 || evt.keyCode === 110 || evt.keyCode === 188)) || (evt.keyCode === 86 && evt.ctrlKey) || (evt.keyCode === 88 && evt.ctrlKey)) {
                 evt = (evt) ? evt : event;
                 evt.cancelBubble = true;
                 if (evt.stopPropagation) {
@@ -196,6 +204,7 @@ function Init() {
                         }
                     }
                 } else {
+                    lastSearchString = dojo.byId("txtAddress").value.trim();
                     dojo.byId("imgSearchLoader").style.display = "none";
                     RemoveChildren(dojo.byId("tblAddressResults"));
                     CreateScrollbar(dojo.byId("divAddressScrollContainer"), dojo.byId("divAddressScrollContent"));
@@ -204,6 +213,7 @@ function Init() {
 
         }
     });
+
 
     handlers.push(dojo.connect(dojo.byId("imgLocate"), "onclick", function () {
         searchAddressViaPod = false;
@@ -300,6 +310,7 @@ function Initialize(responseObject) {
 
     geometryService = new esri.tasks.GeometryService(responseObject.GeometryService);
     commentsInfoPopupFieldsCollection = responseObject.CommentsInfoPopupFieldsCollection;
+    databaseFields = responseObject.DatabaseFields;
     getDirectionsMobile = responseObject.GetDirectionsMobile;
     getDirectionsDesktop = responseObject.GetDirectionsDesktop;
     baseMapLayers = responseObject.BaseMapLayers;
@@ -328,6 +339,10 @@ function Initialize(responseObject) {
     getDirections = responseObject.GetDirections;
     referenceOverlayLayer = responseObject.ReferenceOverlayLayer;
 
+    if (isTablet) {
+        dojo.byId("tdPreviousImg").style.width = "55px";
+        dojo.byId("tdNextImg").style.width = "55px";
+    }
     parkName.replace(/\$\{([^\s\:\}]+)(?:\:([^\s\:\}]+))?\}/g, function (match, key) {
         nameAttribute = key;
     });
@@ -345,11 +360,6 @@ function Initialize(responseObject) {
             if (order[i] === "directions") {
                 td.id = "tdDirectionsPod";
                 if (!getDirections) {
-                    td.style.display = "none";
-                }
-                else if (isBrowser && !getDirectionsDesktop) {
-                    td.style.display = "none";
-                } else if (isTablet && !getDirectionsMobile) {
                     td.style.display = "none";
                 }
             }
@@ -401,7 +411,7 @@ function Initialize(responseObject) {
 
     dojo.byId("txtAddress").setAttribute("defaultAddress", locatorSettings.Locators[0].LocatorDefaultAddress);
     dojo.byId("txtAddress").value = locatorSettings.Locators[0].LocatorDefaultAddress;
-
+    lastSearchString = dojo.byId("txtAddress").value.trim();
     dojo.byId("txtAddress").setAttribute("defaultAddressTitle", locatorSettings.Locators[0].LocatorDefaultAddress);
     dojo.byId("txtAddress").style.color = "gray";
 
@@ -409,6 +419,7 @@ function Initialize(responseObject) {
     dojo.byId("txtAddress").setAttribute("defaultParkTitle", locatorSettings.Locators[1].LocatorDefaultPark);
 
     dojo.byId("txtPodAddress").value = locatorSettings.Locators[0].LocatorDefaultAddress;
+    lastPodSearchString = dojo.byId("txtPodAddress").value;
     dojo.byId("txtPodAddress").style.color = "gray";
     dojo.byId("txtPodAddress").setAttribute("defaultAddress", locatorSettings.Locators[0].LocatorDefaultAddress);
     dojo.byId("txtPodAddress").setAttribute("defaultAddressPodTitle", locatorSettings.Locators[0].LocatorDefaultAddress);
@@ -469,7 +480,6 @@ function MapInitFunction() {
         mode: esri.layers.FeatureLayer.MODE_SNAPSHOT,
         outFields: ["*"],
         id: devPlanLayerID
-
     });
 
     var facilityID;
@@ -487,6 +497,8 @@ function MapInitFunction() {
             devPlanLayer.queryFeatures(query, function (results) {
                 if (results.features.length > 0) {
                     setTimeout(function () {
+                        searchFlag = true;
+                        addressFlag = false;
                         defaultPark = results.features[0];
                         selectedPark = results.features[0].geometry;
                         ExecuteQueryForParks(results, null, null, true);
@@ -526,6 +538,7 @@ function MapInitFunction() {
         }
     }
     dojo.connect(devPlanLayer, "onClick", function (evtArgs) {
+        searchFlag = false;
         selectedPark = evtArgs.graphic.geometry;
         isParkSearched = false;
         selectedGraphic = null;
@@ -561,9 +574,11 @@ function MapInitFunction() {
             ResetSlideControls();
         };
     } else {
+        window.onresize = function () {
+            OrientationChanged();
+        };
         SetHeightAddressResults();
     }
     HideProgressIndicator();
 }
-
 dojo.addOnLoad(Init);
