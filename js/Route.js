@@ -18,9 +18,6 @@
 function ConfigureRoute(mapPoint, park) {
     if (!getDirections) {
         if (!isMobileDevice) {
-            if (isBrowser && !getDirectionsDesktop) {
-                dojo.byId("divDirections").style.display = "none";
-            }
             if (isTablet && !getDirectionsMobile) {
                 dojo.byId("divDirections").style.display = "none";
             }
@@ -29,9 +26,6 @@ function ConfigureRoute(mapPoint, park) {
         }
     } else {
         if (!isMobileDevice) {
-            if (isBrowser && getDirectionsDesktop) {
-                dojo.byId("divDirections").style.display = "block";
-            }
             if (isTablet && getDirectionsMobile) {
                 dojo.byId("divDirections").style.display = "block";
             }

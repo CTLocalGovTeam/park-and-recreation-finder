@@ -25,16 +25,7 @@ var addressFlag = true;
 function LocateAddress() {
     searchFlag = true;
 
-    if (!searchAddressViaPod) {
-        if (isBrowser && !getDirectionsDesktop) {
-            dojo.byId("tdDirectionsPod").style.display = "none";
-        } else if (isTablet && !getDirectionsMobile) {
-            dojo.byId("tdDirectionsPod").style.display = "none";
-        }
-    }
-
     var thisSearchTime = lastSearchTime = (new Date()).getTime();
-
     activityQueryString = "";
 
     var address = [];
@@ -335,7 +326,7 @@ function QueryLayer(geometry, mapPoint, isParkSearched) {
             for (var i in relatedRecords.features) {
                 features.push(relatedRecords.features[i]);
             }
-            featureSet.features = features;          
+            featureSet.features = features;
             ExecuteQueryForParks(featureSet, geometry, mapPoint, isParkSearched);
         });
     } else {
@@ -354,7 +345,7 @@ function QueryLayer(geometry, mapPoint, isParkSearched) {
         ShowProgressIndicator();
         qTask.execute(query, function (featureset) {
             if (featureset.features.length > 0) {
-                dojo.byId("imgToggleResults").setAttribute("disable", false);               
+                dojo.byId("imgToggleResults").setAttribute("disable", false);
                 ExecuteQueryForParks(featureset, geometry, mapPoint, isParkSearched);
             } else {
                 HideProgressIndicator();
@@ -373,21 +364,21 @@ function QueryLayer(geometry, mapPoint, isParkSearched) {
     }
 }
 
-function ExecuteQueryForParks(featureset, geometry, mapPoint, isParkSearched) {   
+function ExecuteQueryForParks(featureset, geometry, mapPoint, isParkSearched) {
     if (!isMobileDevice) {
         WipeInResults();
     }
-    var featureSet = [];  
-    for (var i = 0; i < featureset.features.length; i++) {       
+    var featureSet = [];
+    for (var i = 0; i < featureset.features.length; i++) {
         for (var j in featureset.features[i].attributes) {
             if (!featureset.features[i].attributes[j]) {
                 featureset.features[i].attributes[j] = showNullValueAs;
             }
-        }  
+        }
         var directions = [];
-        var dist;     
+        var dist;
         if (mapPoint) {
-            dist = GetDistance(mapPoint, featureset.features[i].geometry);    
+            dist = GetDistance(mapPoint, featureset.features[i].geometry);
         }
         featureSet.push({
             facilityID: dojo.string.substitute(facilityId, featureset.features[i].attributes),
@@ -423,7 +414,7 @@ function ExecuteQueryForParks(featureset, geometry, mapPoint, isParkSearched) {
         }, dojo.byId("divResultDataContent"));
     }
     var tbody = dojo.create("tbody", {}, table);
- 
+
     for (var i = 0; i < featureSet.length; i++) {
         var tr = dojo.create("tr", {}, tbody);
         var td = dojo.create("td", {
@@ -434,8 +425,8 @@ function ExecuteQueryForParks(featureset, geometry, mapPoint, isParkSearched) {
         td.setAttribute("address", featureSet[i].address);
         td.setAttribute("pName", featureSet[i].facilityID);
 
-        td.className = "selectedPark";       
-        if (featureSet[i].distance) {           
+        td.className = "selectedPark";
+        if (featureSet[i].distance) {
             td.innerHTML = featureSet[i].name + " (" + dojo.number.format(featureSet[i].distance.toFixed(2)) + " miles)";
         } else {
             td.innerHTML = featureSet[i].name;
@@ -491,9 +482,7 @@ function ExecuteQueryForParks(featureset, geometry, mapPoint, isParkSearched) {
                 HideSearchResultContainer();
                 selectedPark = featureSet[this.getAttribute("count")].geometry;
                 if (mapPoint) {
-                    if (getDirectionsMobile) {
-                        dojo.byId("imgDirections").style.display = "block";
-                    }
+                    dojo.byId("imgDirections").style.display = "block";
                     dojo.byId("divInfoDirections").style.display = "none";
                 }
                 RelationshipQuery(selectedPark, featureID, featureSet[point].attributes, isParkSearched);
@@ -537,15 +526,11 @@ function ExecuteQueryForParks(featureset, geometry, mapPoint, isParkSearched) {
         dojo.byId("spanDirectionHeader").innerHTML = "Directions to " + dojo.string.substitute(parkName, defaultPark.attributes);
         dojo.byId("spanParkInfo").innerHTML = dojo.string.substitute(parkName, defaultPark.attributes);
         if (mapPoint) {
-            if (isBrowser) {
-                if (getDirectionsDesktop) {
-                    ConfigureRoute(mapPoint, defaultPark.geometry);
-                }
+            if (isBrowser) {               
+                ConfigureRoute(mapPoint, defaultPark.geometry);               
             } else {
-                if (isMobileDevice || isTablet) {
-                    if (getDirectionsMobile) {
-                        ConfigureRoute(mapPoint, defaultPark.geometry);
-                    }
+                if (isMobileDevice || isTablet) {                  
+                    ConfigureRoute(mapPoint, defaultPark.geometry);                
                 }
             }
         } else {
@@ -558,19 +543,14 @@ function ExecuteQueryForParks(featureset, geometry, mapPoint, isParkSearched) {
         HideProgressIndicator();
         map.infoWindow.resize(225, 60);
         if (!isParkSearched) {
-
             selectedGraphic = mapPoint;
             var screenPoint = map.toScreen(selectedGraphic);
             screenPoint.y = map.height - screenPoint.y;
             map.infoWindow.show(screenPoint);
-
             map.setExtent(GetInfoWindowMobileMapExtent(mapPoint));
-
             map.infoWindow.setTitle(dojo.byId("txtAddress").value.trimString(18), function () {
                 ShowSearchResultsContainer();
-
             });
-
             map.infoWindow.setContent("");
         } else {
             RelationshipQuery(selectedPark, featureID, defaultPark.attributes, true);
@@ -1097,7 +1077,7 @@ function LocateParkOnMap() {
             } else {
                 if (isParkSearched) {
                     QueryLayer(null, null, true);
-                    if (!isMobileDevice) {                       
+                    if (!isMobileDevice) {
                         map.centerAndZoom(selectedPark, locatorSettings.ZoomLevel);
                     }
                     isParkSearched = false;

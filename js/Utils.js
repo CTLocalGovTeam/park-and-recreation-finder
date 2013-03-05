@@ -1181,9 +1181,7 @@ function DisplayInfoWindow(selectedPark, attributes, parkSearched) {
                 if (map.getLayer(tempBufferLayer).graphics.length > 0) {
                     if (map.getLayer(tempBufferLayer).graphics[0].geometry.contains(selectedPark)) {
                         RemoveChildren(dojo.byId("divDirection"));
-                        if (getDirectionsMobile) {
-                            ConfigureRoute(map.getLayer(tempGraphicsLayerId).graphics[0].geometry, selectedPark);
-                        }
+                        ConfigureRoute(map.getLayer(tempGraphicsLayerId).graphics[0].geometry, selectedPark);
                     } else {
                         map.getLayer(routeLayerId).clear();
                     }
@@ -1206,12 +1204,7 @@ function DisplayInfoWindow(selectedPark, attributes, parkSearched) {
                         if (!map.getLayer(tempBufferLayer).graphics[0].geometry.contains(selectedPark)) {
                             dojo.byId("imgDirections").style.display = "none";
                         } else {
-                            if (getDirectionsMobile) {
-                                dojo.byId("imgDirections").style.display = "block";
-                            }
-                            else {
-                                dojo.byId("imgDirections").style.display = "none";
-                            }
+                            dojo.byId("imgDirections").style.display = "block";
                         }
                     } else if (map.getLayer(tempGraphicsLayerId).graphics.length > 0) {
                         if (isParkSearched) {
@@ -1233,11 +1226,8 @@ function DisplayInfoWindow(selectedPark, attributes, parkSearched) {
                     dojo.byId("spanDirectionHeader").innerHTML = "Directions to " + dojo.string.substitute(parkName, attributes);
                     dojo.byId("spanParkInfo").innerHTML = dojo.string.substitute(parkName, attributes);
                     dojo.byId("imgList").style.display = "block";
-
-                    if (getDirectionsMobile) {
-                        if (getDirections) {
-                            dojo.byId("imgDirections").style.display = "block";
-                        }
+                    if (getDirections) {
+                        dojo.byId("imgDirections").style.display = "block";
                     }
                     if (!mapPoint) {
                         NewAddressSearch();
@@ -1419,9 +1409,7 @@ function ShowInfoDetailsView() {
                         dojo.byId("imgDirections").style.display = "none";
                     }
                     else {
-                        if (getDirectionsMobile) {
-                            dojo.byId("imgDirections").style.display = "block";
-                        }
+                        dojo.byId("imgDirections").style.display = "block";
                     }
                 }
             } else {
@@ -1477,10 +1465,8 @@ function ShowCommentsView() {
                     dojo.byId("imgList").style.display = "block";
                     if (!map.getLayer(tempBufferLayer).graphics[0].geometry.contains(selectedPark)) {
                         dojo.byId("imgDirections").style.display = "none";
-                    } else {
-                        if (getDirectionsMobile) {
-                            dojo.byId("imgDirections").style.display = "block";
-                        }
+                    } else {                       
+                        dojo.byId("imgDirections").style.display = "block";                      
                     }
                 }
             } else {

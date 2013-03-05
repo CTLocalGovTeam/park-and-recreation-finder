@@ -157,7 +157,7 @@ function SlideLeft() {
 
 //Reset slide controls
 function ResetSlideControls() {
-    if (newLeft > dojo.byId("divCarouselDataContainer").offsetWidth - dojo.byId("divCarouselDataContent").offsetWidth) {
+    if ((newLeft)-(dojo.byId("divCarouselDataContainer").offsetWidth - dojo.byId("divCarouselDataContent").offsetWidth) >=5 ) {
         dojo.byId("divRightArrow").style.display = "block";
         dojo.byId("divRightArrow").style.cursor = "pointer";
     }
