@@ -1,19 +1,20 @@
-﻿/*
-| Version 10.1.2
-| Copyright 2012 Esri
-|
-| Licensed under the Apache License, Version 2.0 (the "License");
-| you may not use this file except in compliance with the License.
-| You may obtain a copy of the License at
-|
-|    http://www.apache.org/licenses/LICENSE-2.0
-|
-| Unless required by applicable law or agreed to in writing, software
-| distributed under the License is distributed on an "AS IS" BASIS,
-| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-| See the License for the specific language governing permissions and
-| limitations under the License.
-*/
+﻿/*global dojo */
+/*
+ | Version 10.2
+ | Copyright 2012 Esri
+ |
+ | Licensed under the Apache License, Version 2.0 (the "License");
+ | you may not use this file except in compliance with the License.
+ | You may obtain a copy of the License at
+ |
+ |    http://www.apache.org/licenses/LICENSE-2.0
+ |
+ | Unless required by applicable law or agreed to in writing, software
+ | distributed under the License is distributed on an "AS IS" BASIS,
+ | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ | See the License for the specific language governing permissions and
+ | limitations under the License.
+ */
 dojo.provide("js.Config");
 dojo.declare("js.Config", null, {
 
@@ -108,8 +109,7 @@ dojo.declare("js.Config", null, {
     // ServiceUrl is the REST end point for the reference overlay layer
     // DisplayOnLoad setting is used to show or hide the reference overlay layer. Reference overlay will be shown when it is set to true
 
-    ReferenceOverlayLayer:
-    {
+    ReferenceOverlayLayer: {
         ServiceUrl: "http://arcgis-two-1334003536.us-west-1.elb.amazonaws.com/arcgis/rest/services/TrailsOnlyDynamic/MapServer",
         DisplayOnLoad: true
     },
@@ -152,8 +152,7 @@ dojo.declare("js.Config", null, {
         DisplayText: "Park Website:",
         FieldName: "${PARKURL}",
         Alias: "Website"
-    }
-    ],
+    }],
 
     //Activities to be displayed in info window for a park
     Activities: [{
@@ -243,10 +242,10 @@ dojo.declare("js.Config", null, {
     //Set the locator ripple size
     LocatorRippleSize: 30,
 
-    //Set this variable to true/false to enable/disable directions for Mobile/tablet 
+    //Set this variable to true/false to enable/disable directions for Mobile/tablet
     GetDirectionsMobile: true,
 
-    //Set this variable to true/false to enable/disable directions for desktop 
+    //Set this variable to true/false to enable/disable directions for desktop
     GetDirectionsDesktop: true,
 
     //Set this variable to true/false to enable/disable directions
@@ -283,8 +282,8 @@ dojo.declare("js.Config", null, {
         }]
     },
 
-    // Define the database field names 
-    // Note: DateFieldName refers to a date database field. 
+    // Define the database field names
+    // Note: DateFieldName refers to a date database field.
     // All other attributes refer to text database fields.
     DatabaseFields: {
         ParkIdFieldName: "FACILITYID",
@@ -337,7 +336,7 @@ dojo.declare("js.Config", null, {
         TinyURLResponseAttribute: "data.url",
 
         FacebookShareURL: "http://www.facebook.com/sharer.php?u=${0}&t=Parks%20and%20Recreation%20Finder",
-        TwitterShareURL: "http://twitter.com/home/?status=Parks%20and%20Recreation%20Finder ${0}",
+        TwitterShareURL: "http://mobile.twitter.com/compose/tweet?status=Parks%20and%20Recreation%20Finder ${0}",        
         ShareByMailLink: "mailto:%20?subject=Checkout%20this%20map!&body=${0}"
     },
     // ------------------------------------------------------------------------------------------------------------------------

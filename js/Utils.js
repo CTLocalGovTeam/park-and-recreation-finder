@@ -1,19 +1,19 @@
 ﻿/*
-| Version 10.1.2
-| Copyright 2012 Esri
-|
-| Licensed under the Apache License, Version 2.0 (the "License");
-| you may not use this file except in compliance with the License.
-| You may obtain a copy of the License at
-|
-|    http://www.apache.org/licenses/LICENSE-2.0
-|
-| Unless required by applicable law or agreed to in writing, software
-| distributed under the License is distributed on an "AS IS" BASIS,
-| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-| See the License for the specific language governing permissions and
-| limitations under the License.
-*/
+ | Version 10.2
+ | Copyright 2012 Esri
+ |
+ | Licensed under the Apache License, Version 2.0 (the "License");
+ | you may not use this file except in compliance with the License.
+ | You may obtain a copy of the License at
+ |
+ |    http://www.apache.org/licenses/LICENSE-2.0
+ |
+ | Unless required by applicable law or agreed to in writing, software
+ | distributed under the License is distributed on an "AS IS" BASIS,
+ | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ | See the License for the specific language governing permissions and
+ | limitations under the License.
+ */
 var orientationChange = false; //flag set on orientation event
 var tinyResponse; //variable to store the response getting from tiny URL API
 var tinyUrl; //variable to store the tiny URL
@@ -482,12 +482,10 @@ function Share(site) {
     }
 }
 
-//Get map Extent
+//Get current map Extent
 function GetMapExtent() {
-    var extents = map.extent.xmin.toString() + ",";
-    extents += map.extent.ymin.toString() + ",";
-    extents += map.extent.xmax.toString() + ",";
-    extents += map.extent.ymax.toString();
+    var extents = Math.round(map.extent.xmin).toString() + "," + Math.round(map.extent.ymin).toString() + "," +
+                  Math.round(map.extent.xmax).toString() + "," + Math.round(map.extent.ymax).toString();
     return (extents);
 }
 
@@ -1465,8 +1463,8 @@ function ShowCommentsView() {
                     dojo.byId("imgList").style.display = "block";
                     if (!map.getLayer(tempBufferLayer).graphics[0].geometry.contains(selectedPark)) {
                         dojo.byId("imgDirections").style.display = "none";
-                    } else {                       
-                        dojo.byId("imgDirections").style.display = "block";                      
+                    } else {
+                        dojo.byId("imgDirections").style.display = "block";
                     }
                 }
             } else {
@@ -1756,7 +1754,7 @@ function NewAddressSearch() {
                         clearTimeout(stagedSearch);
 
                         if (dojo.byId("txtPodAddress").value.trim().length > 0) {
-                            // Stage a new search, which will launch if no new searches show up 
+                            // Stage a new search, which will launch if no new searches show up
                             // before the timeout
                             stagedSearch = setTimeout(function () {
                                 LocateAddress();
